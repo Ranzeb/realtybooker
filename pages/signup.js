@@ -13,12 +13,20 @@ import {
     Text,
     useColorModeValue,
     Link,
+    Center
 } from '@chakra-ui/react';
+import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { auth, googleAuthProvider } from '@/lib/firebase';
 
-export default function SignupCard() {
+export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
+
+    // Sign in with Google button
+    const signInWithGoogle = async () => {
+        await auth.signInWithPopup(googleAuthProvider);
+    };
 
     return (
         <Flex
@@ -86,9 +94,23 @@ export default function SignupCard() {
                                 Sign up
                             </Button>
                         </Stack>
+                        <Stack spacing={10} pt={2}>
+                            <Center>
+                                <Button
+                                    w={'full'}
+                                    maxW={'md'}
+                                    variant={'outline'}
+                                    leftIcon={<FcGoogle />}
+                                    onClick={signInWithGoogle}>
+                                    <Center>
+                                        <Text>Sign in with Google</Text>
+                                    </Center>
+                                </Button>
+                            </Center>
+                        </Stack>
                         <Stack pt={6}>
                             <Text align={'center'}>
-                                Already a user? <Link color={'blue.400'}>Login</Link>
+                                Already a user? <Link color={'blue.400'} href={'/signin'}>Login</Link>
                             </Text>
                         </Stack>
                     </Stack>

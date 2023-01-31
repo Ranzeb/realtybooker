@@ -11,36 +11,26 @@ import {
     Heading,
     Text,
     useColorModeValue,
+    Center
 } from '@chakra-ui/react';
-
-import { auth, firestore, googleAuthProvider } from '../lib/firebase';
+import { FcGoogle } from 'react-icons/fc';
+import { auth, googleAuthProvider } from '../lib/firebase';
 import { UserContext } from '../lib/context';
 import { useContext } from 'react';
 import Router from "next/router";
 
-export default function SimpleCard() {
+export default function SignIn() {
+    const { user, username } = useContext(UserContext);
+
     // Sign in with Google button
     const signInWithGoogle = async () => {
         await auth.signInWithPopup(googleAuthProvider);
     };
 
-    function SignInButton() {
-        const signInWithGoogle = async () => {
-            await auth.signInWithPopup(googleAuthProvider);
-        };
-
-        return (
-            <button className="btn-google" onClick={signInWithGoogle}>
-                <img src={'/google.png'} width="30px" /> Sign in with Google
-            </button>
-        );
-    }
-
-    const { user, username } = useContext(UserContext);
-
     const redirect = () => {
         Router.push('/home');
     }
+
     function SignInPage() {
         return (
             <Flex
@@ -69,11 +59,6 @@ export default function SimpleCard() {
                                 <FormLabel>Password</FormLabel>
                                 <Input type="password" />
                             </FormControl>
-                            <Stack>
-                                <button className="btn-google" onClick={signInWithGoogle}>
-                                    <img src={'/google.png'} width="30px" /> Sign in with Google
-                                </button>
-                            </Stack>
                             <Stack spacing={10}>
                                 <Stack
                                     direction={{ base: 'column', sm: 'row' }}
@@ -82,6 +67,8 @@ export default function SimpleCard() {
                                     <Checkbox>Remember me</Checkbox>
                                     <Link color={'blue.400'}>Forgot password?</Link>
                                 </Stack>
+                            </Stack>
+                            <Stack spacing={10} pt={2}>
                                 <Button
                                     bg={'blue.400'}
                                     color={'white'}
@@ -90,6 +77,20 @@ export default function SimpleCard() {
                                     }}>
                                     Sign in
                                 </Button>
+                            </Stack>
+                            <Stack spacing={10} pt={2}>
+                                <Center>
+                                    <Button
+                                        w={'full'}
+                                        maxW={'md'}
+                                        variant={'outline'}
+                                        leftIcon={<FcGoogle />}
+                                        onClick={signInWithGoogle}>
+                                        <Center>
+                                            <Text>Sign in with Google</Text>
+                                        </Center>
+                                    </Button>
+                                </Center>
                             </Stack>
                         </Stack>
                     </Box>

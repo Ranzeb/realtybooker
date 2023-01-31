@@ -30,7 +30,6 @@ export default function Navbar() {
 
     function signOut() {
         auth.signOut();
-        Router.push('/signin');
     }
 
 
