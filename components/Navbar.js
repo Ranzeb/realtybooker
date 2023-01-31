@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import {
     Box,
     Flex,
@@ -32,6 +32,9 @@ export default function Navbar() {
         auth.signOut();
     }
 
+    useEffect(() => {
+        console.log(username);
+    })
 
     return (
         <>
@@ -54,6 +57,7 @@ export default function Navbar() {
                                     minW={0}>
                                     <Avatar
                                         size={'sm'}
+                                        name={user?.displayName ? user.displayName : username}
                                         src={user?.photoURL}
                                     />
                                 </MenuButton>
@@ -62,6 +66,7 @@ export default function Navbar() {
                                     <Center>
                                         <Avatar
                                             size={'2xl'}
+                                            name={user?.displayName ? user.displayName : username}
                                             src={user?.photoURL}
                                         />
                                     </Center>
