@@ -1,8 +1,8 @@
 import { useUserData } from '../lib/hooks';
 import { UserContext } from '../lib/context';
-import ProjectNavbar from '@/components/ProjectNavbar';
 import Navbar from '@/components/Navbar';
 import { ChakraProvider } from '@chakra-ui/react';
+import { Toaster } from 'react-hot-toast';
 
 export default function MyApp({ Component, pageProps }) {
 
@@ -10,6 +10,7 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
     <ChakraProvider>
+      <Toaster />
       <UserContext.Provider value={userData}>
         <Component {...pageProps} />
       </UserContext.Provider>

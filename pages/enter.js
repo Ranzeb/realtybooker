@@ -2,6 +2,7 @@ import { auth, firestore, googleAuthProvider } from '../lib/firebase';
 import { UserContext } from '../lib/context';
 import { useEffect, useState, useCallback, useContext } from 'react';
 import debounce from 'lodash.debounce';
+import AuthCheck from '@/components/AuthCheck';
 
 export default function Enter(props) {
     const { user, username } = useContext(UserContext);
@@ -11,7 +12,9 @@ export default function Enter(props) {
     // 3. user signed in, has username <SignOutButton />
     return (
         <main>
-            {user ? !username ? <UsernameForm /> : <SignOutButton /> : < SignInButton />}
+            <AuthCheck>
+                <UsernameForm />
+            </AuthCheck>
         </main>
     );
 }
@@ -98,27 +101,26 @@ function UsernameForm() {
     );
 
     return (
-        !username && (
-            <section>
-                <h3>Choose Username</h3>
-                <form onSubmit={onSubmit}>
-                    <input name="username" placeholder="myname" value={formValue} onChange={onChange} />
-                    <UsernameMessage username={formValue} isValid={isValid} loading={loading} />
-                    <button type="submit" className="btn-green" disabled={!isValid}>
-                        Choose
-                    </button>
 
-                    <h3>Debug State</h3>
-                    <div>
-                        Username: {formValue}
-                        <br />
-                        Loading: {loading.toString()}
-                        <br />
-                        Username Valid: {isValid.toString()}
-                    </div>
-                </form>
-            </section>
-        )
+        <section>
+            <h3>Choose Username</h3>
+            <form onSubmit={onSubmit}>
+                <input name="username" placeholder="myname" value={formValue} onChange={onChange} />
+                <UsernameMessage username={formValue} isValid={isValid} loading={loading} />
+                <button type="submit" className="btn-green" disabled={!isValid}>
+                    Choose
+                </button>
+
+                <h3>Debug State</h3>
+                <div>
+                    Username: {formValue}
+                    <br />
+                    Loading: {loading.toString()}
+                    <br />
+                    Username Valid: {isValid.toString()}
+                </div>
+            </form>
+        </section>
     );
 }
 

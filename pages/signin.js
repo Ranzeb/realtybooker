@@ -16,22 +16,51 @@ import {
 import { FcGoogle } from 'react-icons/fc';
 import { auth, googleAuthProvider } from '../lib/firebase';
 import { UserContext } from '../lib/context';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
+import { signInWithEmailAndPassword } from "firebase/auth";
 import Router from "next/router";
+import toast from 'react-hot-toast';
 
 export default function SignIn() {
     const { user, username } = useContext(UserContext);
-
-    // Sign in with Google button
-    const signInWithGoogle = async () => {
-        await auth.signInWithPopup(googleAuthProvider);
-    };
 
     const redirect = () => {
         Router.push('/home');
     }
 
     function SignInPage() {
+        const [userCredential, setUserCredentials] = useState({ email: "", password: "" });
+
+        const onChange = (e) => {
+            e.preventDefault();
+            const { name, value } = e.target;
+            setUserCredentials(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
+        };
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            signInWithEmailAndPassword(auth, userCredential.email, userCredential.password)
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
+
+                    Router.push('/home');
+                })
+                .catch((error) => {
+                    console.log(error);
+                    const message = "Username or password incorrect";
+                    toast.error(message);
+                });
+        };
+
+        // Sign in with Google button
+        const signInWithGoogle = async () => {
+            await auth.signInWithPopup(googleAuthProvider);
+        };
+
         return (
             <Flex
                 minH={'100vh'}
@@ -51,33 +80,38 @@ export default function SignIn() {
                         boxShadow={'lg'}
                         p={8}>
                         <Stack spacing={4}>
-                            <FormControl id="email">
-                                <FormLabel>Email address</FormLabel>
-                                <Input type="email" />
-                            </FormControl>
-                            <FormControl id="password">
-                                <FormLabel>Password</FormLabel>
-                                <Input type="password" />
-                            </FormControl>
-                            <Stack spacing={10}>
-                                <Stack
-                                    direction={{ base: 'column', sm: 'row' }}
-                                    align={'start'}
-                                    justify={'space-between'}>
-                                    <Checkbox>Remember me</Checkbox>
-                                    <Link color={'blue.400'}>Forgot password?</Link>
+                            <form onSubmit={handleSubmit} method="post">
+                                <FormControl id="email">
+                                    <FormLabel>Email address</FormLabel>
+                                    <Input autoComplete="off" type="email" name="email" value={userCredential.email} onChange={onChange} />
+                                </FormControl>
+                                <FormControl id="password">
+                                    <FormLabel>Password</FormLabel>
+                                    <Input autoComplete="new-password" type="password" name="password" value={userCredential.password} onChange={onChange} />
+                                </FormControl>
+                                <Stack spacing={10}>
+                                    <Stack
+                                        direction={{ base: 'column', sm: 'row' }}
+                                        align={'start'}
+                                        justify={'space-between'}>
+                                        <Checkbox>Remember me</Checkbox>
+                                        <Link color={'blue.400'}>Forgot password?</Link>
+                                    </Stack>
                                 </Stack>
-                            </Stack>
-                            <Stack spacing={10} pt={2}>
-                                <Button
-                                    bg={'blue.400'}
-                                    color={'white'}
-                                    _hover={{
-                                        bg: 'blue.500',
-                                    }}>
-                                    Sign in
-                                </Button>
-                            </Stack>
+
+                                <Stack spacing={10} pt={2}>
+                                    <Button
+                                        bg={'blue.400'}
+                                        color={'white'}
+                                        _hover={{
+                                            bg: 'blue.500',
+                                        }}
+                                        type={"submit"}
+                                    >
+                                        Sign in
+                                    </Button>
+                                </Stack>
+                            </form>
                             <Stack spacing={10} pt={2}>
                                 <Center>
                                     <Button
@@ -91,6 +125,11 @@ export default function SignIn() {
                                         </Center>
                                     </Button>
                                 </Center>
+                            </Stack>
+                            <Stack pt={6}>
+                                <Text align={'center'}>
+                                    You don't have an account? <Link color={'blue.400'} href={'/signup'}>Register</Link>
+                                </Text>
                             </Stack>
                         </Stack>
                     </Box>
