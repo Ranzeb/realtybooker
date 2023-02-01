@@ -15,5 +15,5 @@ export default function AuthCheck(props) {
     }, [username, user])
     */
 
-    return username ? props.children : props.fallback || <Button onClick={() => (redirect('/signin'))}>Click here to login</Button>;
+    return username ? props.children : props.fallback
 }

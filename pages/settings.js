@@ -42,8 +42,9 @@ export default function Settings() {
 
     return (
         <>
+
+            <Navbar />
             <AuthCheck>
-                <Navbar />
                 <Flex
                     minH={'100vh'}
                     align={'center'}
@@ -80,7 +81,7 @@ export default function Settings() {
                                 _placeholder={{ color: 'gray.500' }}
                                 name="name"
                                 type="name"
-                                value={userCredential.name}
+                                value={userCredential.name || ""}
                                 onChange={onChange}
                             />
                         </FormControl>
@@ -107,8 +108,9 @@ export default function Settings() {
                         </Stack>
                     </Stack>
                 </Flex>
-
             </AuthCheck>
+
+
         </>
     )
 }

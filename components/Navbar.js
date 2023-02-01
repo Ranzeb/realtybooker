@@ -19,12 +19,12 @@ import {
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { UserContext } from '@/lib/context';
 import { useContext } from 'react';
-import Router from 'next/router';
 import { auth } from '@/lib/firebase';
 import redirect from '@/lib/redirect';
 
 function signOut() {
     auth.signOut();
+    redirect('/signin');
 }
 
 
