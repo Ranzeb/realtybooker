@@ -21,26 +21,24 @@ import { UserContext } from '@/lib/context';
 import { useContext } from 'react';
 import Router from 'next/router';
 import { auth } from '@/lib/firebase';
+import redirect from '@/lib/redirect';
+
+function signOut() {
+    auth.signOut();
+}
+
 
 export default function Navbar() {
     const { colorMode, toggleColorMode } = useColorMode();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const { user, username } = useContext(UserContext)
-
-    function signOut() {
-        auth.signOut();
-    }
-
-    useEffect(() => {
-        console.log(username);
-    })
+    const { user, username } = useContext(UserContext);
 
     return (
         <>
             <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
                 <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-                    <Box>Logo</Box>
+                    <Box onClick={() => (redirect('/home'))}>Logo</Box>
 
                     <Flex alignItems={'center'}>
                         <Stack direction={'row'} spacing={7}>
@@ -76,8 +74,7 @@ export default function Navbar() {
                                     </Center>
                                     <br />
                                     <MenuDivider />
-                                    <MenuItem>Your Servers</MenuItem>
-                                    <MenuItem>Account Settings</MenuItem>
+                                    <MenuItem onClick={() => (redirect('/settings'))}>Account Settings</MenuItem>
                                     <MenuItem onClick={signOut}>Logout</MenuItem>
                                 </MenuList>
                             </Menu>

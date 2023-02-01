@@ -18,15 +18,11 @@ import { auth, googleAuthProvider } from '../lib/firebase';
 import { UserContext } from '../lib/context';
 import { useContext, useState } from 'react';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import Router from "next/router";
+import redirect from '@/lib/redirect';
 import toast from 'react-hot-toast';
 
 export default function SignIn() {
     const { user, username } = useContext(UserContext);
-
-    const redirect = () => {
-        Router.push('/home');
-    }
 
     function SignInPage() {
         const [userCredential, setUserCredentials] = useState({ email: "", password: "" });
@@ -47,7 +43,7 @@ export default function SignIn() {
                     // Signed in 
                     const user = userCredential.user;
 
-                    Router.push('/home');
+                    redirect('/home');
                 })
                 .catch((error) => {
                     console.log(error);
@@ -59,6 +55,7 @@ export default function SignIn() {
         // Sign in with Google button
         const signInWithGoogle = async () => {
             await auth.signInWithPopup(googleAuthProvider);
+            redirect('/home');
         };
 
         return (
@@ -137,5 +134,5 @@ export default function SignIn() {
             </Flex>
         )
     }
-    return !user ? <SignInPage /> : redirect()
+    return <SignInPage />
 }
