@@ -46,6 +46,7 @@ function UsernameForm() {
     const { user, username } = useContext(UserContext);
 
     const onSubmit = async (e) => {
+
         e.preventDefault();
 
         // Create refs for both documents
