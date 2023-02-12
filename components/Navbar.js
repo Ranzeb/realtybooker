@@ -74,7 +74,7 @@ export default function Navbar() {
                                     </Center>
                                     <br />
                                     <MenuDivider />
-                                    <MenuItem onClick={() => (redirect('/settings'))}>Account Settings</MenuItem>
+                                    <MenuItem onClick={() => (redirect('/settings/profile'))}>Account Settings</MenuItem>
                                     <MenuItem onClick={signOut}>Logout</MenuItem>
                                 </MenuList>
                             </Menu>

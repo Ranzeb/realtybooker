@@ -13,13 +13,14 @@ import {
     IconButton,
     Center,
 } from '@chakra-ui/react';
-import { auth, firestore } from '../lib/firebase';
+import { auth, firestore } from '../../lib/firebase';
 import 'firebase/storage';
 import Navbar from "@/components/Navbar";
 import { UserContext } from '@/lib/context';
 import { useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 import 'firebase/compat/database';
+import Sidebar from '@/components/Sidebar';
 
 
 
@@ -64,7 +65,12 @@ export default function Settings() {
         <>
 
             <Navbar />
-            <form onSubmit={handleSubmit} method="post">
+            <Flex>
+                <Flex>
+                <Sidebar />
+                </Flex>
+                <Flex>
+                <form onSubmit={handleSubmit} method="post">
                 <Flex
                     minH={'100vh'}
                     align={'center'}
@@ -107,6 +113,16 @@ export default function Settings() {
                                 onChange={onChange}
                             />
                         </FormControl>
+                        <FormControl id="Email" >
+                            <FormLabel>Email</FormLabel>
+                            <Input
+                                placeholder={user?.email}
+                                _placeholder={{ color: 'gray.500' }}
+                                name="email"
+                                type="email"
+                                disabled
+                            />
+                        </FormControl>
                         <Stack spacing={6} direction={['column', 'row']}>
                             <Button
                                 bg={'red.400'}
@@ -133,6 +149,9 @@ export default function Settings() {
                     </Stack>
                 </Flex>
             </form>
+            </Flex>
+            </Flex>
+           
 
 
 

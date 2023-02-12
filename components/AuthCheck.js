@@ -7,7 +7,7 @@ import { Button } from '@chakra-ui/react';
 // Component's children only shown to logged-in users
 export default function AuthCheck(props) {
     const { user, username } = useContext(UserContext);
-
+console.log(user)
     /*
     useEffect(() => {
         if (!username || !user)
