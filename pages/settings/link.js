@@ -9,12 +9,13 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-
-import { auth, firestore, googleAuthProvider } from '../../lib/firebase';
+import firebase from 'firebase/compat/app'
+import { doc, auth, firestore, googleAuthProvider } from '../../lib/firebase';
 import { UserContext } from '../../lib/context';
 
 import { useEffect, useState, useCallback, useContext } from 'react';
 import debounce from 'lodash.debounce';
+
 
 export default function Link() {
 
@@ -23,11 +24,34 @@ export default function Link() {
   const [loading, setLoading] = useState(false);
 
   const { user, username } = useContext(UserContext);
+  const postRef = firestore.collection('users').doc(auth.currentUser?.uid);
+  const [link, setLink] = useState("");
+
+  const getLink = () => {
+    postRef.get()
+      .then(doc => {
+        setLink(doc.data().link);
+      })
+      .catch(err => {
+        console.log('Error getting document', err);
+      });
+  }
+
+  const currentLink = getLink();
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
     // Create refs for both documents
+    if (link) {
+      const linkRef = firestore.collection('links').doc(link);
+      linkRef.delete().then(() => {
+        console.log("Document successfully deleted!");
+      }).catch((error) => {
+        console.error("Error removing document: ", error);
+      });
+    }
+
     const userDoc = firestore.doc(`users/${user.uid}`);
     const linkDoc = firestore.doc(`links/${formValue}`);
 
@@ -109,7 +133,7 @@ export default function Link() {
 
 
             <Input name="link"
-              placeholder="your link"
+              placeholder={link}
               _placeholder={{ color: 'gray.500' }}
               value={formValue}
               onChange={onChange} />
