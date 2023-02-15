@@ -12,10 +12,12 @@ import {
 import firebase from 'firebase/compat/app'
 import { doc, auth, firestore, googleAuthProvider } from '../../lib/firebase';
 import { UserContext } from '../../lib/context';
-
+import toast from 'react-hot-toast';
+import Sidebar from "@/components/Sidebar";
 import { useEffect, useState, useCallback, useContext } from 'react';
 import debounce from 'lodash.debounce';
-
+import { useRouter } from 'next/router';
+import AuthCheck from "@/components/AuthCheck";
 
 export default function Link() {
 
@@ -27,17 +29,22 @@ export default function Link() {
   const postRef = firestore.collection('users').doc(auth.currentUser?.uid);
   const [link, setLink] = useState("");
 
+  const router = useRouter();
+
   const getLink = () => {
     postRef.get()
       .then(doc => {
         setLink(doc.data().link);
       })
       .catch(err => {
-        console.log('Error getting document', err);
+        //toast.error("Error updating link: ", err)
       });
   }
 
-  const currentLink = getLink();
+  useEffect(() => {
+    getLink();
+  });
+
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -46,9 +53,10 @@ export default function Link() {
     if (link) {
       const linkRef = firestore.collection('links').doc(link);
       linkRef.delete().then(() => {
-        console.log("Document successfully deleted!");
+        toast.success('Link updated successfully!')
+
       }).catch((error) => {
-        console.error("Error removing document: ", error);
+        toast.error("Error updating link: ", error)
       });
     }
 
@@ -61,6 +69,9 @@ export default function Link() {
     batch.set(linkDoc, { uid: user.uid });
 
     await batch.commit();
+
+    getLink();
+    router.reload(window.location.pathname);
   };
 
 
@@ -106,53 +117,59 @@ export default function Link() {
 
   return (
     <>
-      <Navbar />
-      <Flex
-        minH={'100vh'}
-        align={'center'}
-        justify={'center'}
-        bg={useColorModeValue('gray.50', 'gray.800')}>
-        <Stack
-          spacing={4}
-          w={'full'}
-          maxW={'md'}
-          bg={useColorModeValue('white', 'gray.700')}
-          rounded={'xl'}
-          boxShadow={'lg'}
-          p={6}
-          my={12}>
-          <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-            Do you want to change your link?
-          </Heading>
-          <Text
-            fontSize={{ base: 'sm', sm: 'md' }}
-            color={useColorModeValue('gray.800', 'gray.400')}>
-            Changing your Calendly URL will mean that all of your copied links will no longer work and will need to be updated.
-          </Text>
-          <form onSubmit={onSubmit}>
-
-
-            <Input name="link"
-              placeholder={link}
-              _placeholder={{ color: 'gray.500' }}
-              value={formValue}
-              onChange={onChange} />
-            <LinkMessage link={formValue} isValid={isValid} loading={loading} />
-            <Stack spacing={6} mt={5}>
-              <Button
-                bg={'blue.400'}
-                color={'white'}
-                type="submit"
-                isDisabled={!isValid}
-                _hover={{
-                  bg: 'blue.500',
-                }}>
-                Change Link
-              </Button>
+      <AuthCheck>
+        <Navbar />
+        <Stack isInline spacing={8} align="center" justify="center">
+          <Flex>
+            <Sidebar />
+          </Flex>
+          <Flex
+            width="500px"
+            minH={'100vh'}
+            align={'center'}
+            justify={'center'}
+          >
+            <Stack
+              spacing={4}
+              w={'full'}
+              maxW={'md'}
+              bg={useColorModeValue('white', 'gray.700')}
+              rounded={'xl'}
+              boxShadow={'lg'}
+              p={6}
+              my={12}>
+              <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
+                Do you want to change your link?
+              </Heading>
+              <Text
+                fontSize={{ base: 'sm', sm: 'md' }}
+                color={useColorModeValue('gray.800', 'gray.400')}>
+                Changing your Calendly URL will mean that all of your copied links will no longer work and will need to be updated.
+              </Text>
+              <form onSubmit={onSubmit} method="POST">
+                <Input name="link"
+                  placeholder={link}
+                  _placeholder={{ color: 'gray.500' }}
+                  value={formValue}
+                  onChange={onChange} />
+                <LinkMessage link={formValue} isValid={isValid} loading={loading} />
+                <Stack spacing={6} mt={5}>
+                  <Button
+                    bg={'blue.400'}
+                    color={'white'}
+                    type="submit"
+                    isDisabled={!isValid}
+                    _hover={{
+                      bg: 'blue.500',
+                    }}>
+                    Change Link
+                  </Button>
+                </Stack>
+              </form>
             </Stack>
-          </form>
+          </Flex>
         </Stack>
-      </Flex>
+      </AuthCheck>
     </>
   )
 }
