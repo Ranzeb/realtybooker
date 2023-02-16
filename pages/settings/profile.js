@@ -22,6 +22,7 @@ import toast from 'react-hot-toast';
 import 'firebase/compat/database';
 import Sidebar from '@/components/Sidebar';
 import AuthCheck from '@/components/AuthCheck';
+import SubNavbar from '@/components/Subnavbar';
 export default function Settings() {
 
     const { user, username } = useContext(UserContext);
@@ -58,10 +59,12 @@ export default function Settings() {
         }
     };
 
+    const pageName = "Settings";
     return (
         <>
 
             <Navbar />
+            <SubNavbar props={pageName} />
             <AuthCheck>
                 <Stack isInline spacing={8} align="center" justify="center">
                     <Flex>
