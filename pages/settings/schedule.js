@@ -39,8 +39,6 @@ export default function Schedule() {
     }));
 
     const changeSchedule = (value, day, type) => {
-        const index = days.indexOf(day);
-        console.log("value: " + value + " day: " + day + " type: " + type);
         const newSchedule = [...schedule];
         const currentWorkingHour = schedule.findIndex(obj => obj.day === day);
         
@@ -56,6 +54,10 @@ export default function Schedule() {
         console.log(newSchedule[currentWorkingHour])
         setSchedule(newSchedule);
         console.log(schedule);
+    }
+
+    const handleSubmit = () => {
+        //save state on DB then reload the page.
     }
 
     return (
@@ -80,6 +82,7 @@ export default function Schedule() {
                         <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }} mb={5}>
                             Set your weekly schedule
                         </Heading>
+                        <form onSubmit={handleSubmit} method="post">
                         <FormControl id="email" display={'flex'} mt={5} mb={5} isRequired>
                             <SimpleGrid columns={[2, null, 1]} spacing='40px'>
                                 {days.map((day, id) => {
@@ -106,10 +109,12 @@ export default function Schedule() {
                                 color={'white'}
                                 _hover={{
                                     bg: 'blue.500',
-                                }}>
+                                }}
+                                type={"submit"}>
                                 Submit
                             </Button>
                         </Stack>
+                        </form>
                     </Stack>
                 </Flex>
             </AuthCheck>
