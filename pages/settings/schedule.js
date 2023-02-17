@@ -1,5 +1,6 @@
 import AuthCheck from "@/components/AuthCheck";
 import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 import SubNavbar from "@/components/SubNavbar";
 import {
     Button,
@@ -16,7 +17,7 @@ import {
     Box,
     Divider
 } from '@chakra-ui/react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const workingHours = {
     day: "",
@@ -28,38 +29,33 @@ const workingHours = {
 export default function Schedule() {
     const pageName = "Working Hours";
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const [checkBoxes, setCheckBoxes] = useState([]);
-    const [schedule, setSchedule] = useState([{}]);
-
-    const changeCheckBoxesState = (day) => {
-        const newCheckBox = [...checkBoxes];
-        const index = newCheckBox.indexOf(day);
-        if (index === -1) {
-            newCheckBox.push(day);
-        } else {
-            newCheckBox.splice(index, 1);
+    const [schedule, setSchedule] = useState(days.map((day) => {
+        return {
+            day: day,
+            startingHour: "9",
+            endingHour: "17",
+            available: true
         }
+    }));
 
-        setCheckBoxes(newCheckBox);
-        console.log(setCheckBoxes);
-    }
-
-    const changeSchedule = (value, day) => {
+    const changeSchedule = (value, day, type) => {
+        const index = days.indexOf(day);
+        console.log("value: " + value + " day: " + day + " type: " + type);
         const newSchedule = [...schedule];
-        const index = newSchedule.indexOf(day);
-        if (index === -1) {
-            newSchedule.push({
-                day: day,
-                startingHour: value,
-                endingHour: "",
-                available: true
-            });
-        } else {
-            newCheckBox.splice(index, 1);
+        const currentWorkingHour = schedule.findIndex(obj => obj.day === day);
+        
+        const newWorkingHour = {
+            day: day,
+            startingHour: type === "beginningHour" ? value : newSchedule[currentWorkingHour].startingHour,
+            endingHour: type === "endingHour" ? value : newSchedule[currentWorkingHour].endingHour,
+            available: type === "checkBox" ? value : newSchedule[currentWorkingHour].available
         }
 
-        setCheckBoxes(newCheckBox);
-        console.log(setCheckBoxes);
+        newSchedule[currentWorkingHour] = newWorkingHour;
+        console.log(newWorkingHour);
+        console.log(newSchedule[currentWorkingHour])
+        setSchedule(newSchedule);
+        console.log(schedule);
     }
 
     return (
@@ -90,12 +86,12 @@ export default function Schedule() {
                                     return (
                                         <div key={id}>
                                             <Box display={'flex'} mb={30} >
-                                                <Checkbox defaultChecked mr={5} width={70}>{day}</Checkbox>
+                                                <Checkbox defaultChecked mr={5} width={70} onChange={e => changeSchedule(e.target.value, day, "checkBox")}>{day}</Checkbox>
 
                                                 <Box display={'flex'} alignItems={'center'}>
-                                                    <Input id={day + "BeginningHour"} mr={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, day)} />
+                                                    <Input id={day + "BeginningHour"} mr={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, day, "beginningHour")} />
                                                     -
-                                                    <Input id={day + "EndingHour"} ml={2} htmlSize={4} width='auto' />
+                                                    <Input id={day + "EndingHour"} ml={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, day, "endingHour")}/>
                                                 </Box>
                                             </Box>
                                             <Divider />
