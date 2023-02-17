@@ -28,6 +28,7 @@ export default function Settings() {
     const { user, username } = useContext(UserContext);
     const [userCredential, setUserCredentials] = useState({ name: user?.displayName ? user.displayName : username, email: user?.email, password: "" });
     const postRef = firestore.collection('users').doc(auth.currentUser?.uid);
+    const pageName = "Settings";
 
     const onChange = (e) => {
         e.preventDefault();
@@ -59,7 +60,6 @@ export default function Settings() {
         }
     };
 
-    const pageName = "Settings";
     return (
         <>
 
