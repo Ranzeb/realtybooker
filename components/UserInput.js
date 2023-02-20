@@ -12,8 +12,10 @@ import {
     Text,
     useColorModeValue,
 } from '@chakra-ui/react';
+import { DatePickerInput } from 'chakra-datetime-picker';
+import HorizontalSlider from './HorizontalSlider';
 
-export default function SimpleCard() {
+export default function UserInput() {
     return (
         <Flex
             minH={'100vh'}
@@ -35,11 +37,11 @@ export default function SimpleCard() {
                     <Stack spacing={4}>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
-                            <Input type="input" />
+                            <DatePickerInput />
                         </FormControl>
                         <FormControl id="time">
                             <FormLabel>Time</FormLabel>
-                            <Input type="input" />
+                            <HorizontalSlider />
                         </FormControl>
                         <Stack spacing={10}>
                             <Button
