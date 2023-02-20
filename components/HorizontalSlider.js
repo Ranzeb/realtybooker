@@ -9,9 +9,11 @@ export default function HorizontalSlider(props) {
     return (
         <>
             <HStack spacing='24px' width='100%' overflowX={'scroll'}>
-                {hours.map((hour) => {
-                    return (<HourPicker time={hour} />)
-                })}
+                <HStack mb={5}>
+                    {hours.map((hour) => {
+                        return (<HourPicker time={hour} />)
+                    })}
+                </HStack>
             </HStack>
         </>
     )
