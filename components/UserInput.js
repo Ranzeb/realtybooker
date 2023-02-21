@@ -69,7 +69,7 @@ export default function UserInput() {
                     <Stack spacing={4}>
                         <FormControl id="location">
                             <FormLabel>Location of the showing</FormLabel>
-                            <Inpyt type={'input'} />
+                            <Input type={'input'} />
                         </FormControl>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
