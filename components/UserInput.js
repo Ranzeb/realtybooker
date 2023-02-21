@@ -14,10 +14,11 @@ import {
 } from '@chakra-ui/react';
 import { DatePickerInput } from 'chakra-datetime-picker';
 import HorizontalSlider from './HorizontalSlider';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function UserInput() {
     const [dateTime, setDateTime] = useState([]);
+    const [value, setValue] = useState();
 
     const handleSelect = (value, type, id) => {
         console.log(dateTime)
@@ -42,6 +43,10 @@ export default function UserInput() {
         }
 
     }
+
+    useEffect(() => {
+        console.log(value);
+    }, [value])
 
     return (
         <Flex
@@ -68,7 +73,7 @@ export default function UserInput() {
                         </FormControl>
                         <FormControl id="time">
                             <FormLabel>Time</FormLabel>
-                            <HorizontalSlider />
+                            <HorizontalSlider onClick={handleSelect} />
                         </FormControl>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
@@ -76,7 +81,7 @@ export default function UserInput() {
                         </FormControl>
                         <FormControl id="time">
                             <FormLabel>Time</FormLabel>
-                            <HorizontalSlider />
+                            <HorizontalSlider onClick={handleSelect} />
                         </FormControl>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
@@ -84,7 +89,7 @@ export default function UserInput() {
                         </FormControl>
                         <FormControl id="time">
                             <FormLabel>Time</FormLabel>
-                            <HorizontalSlider />
+                            <HorizontalSlider onClick={handleSelect} />
                         </FormControl>
                         <Stack spacing={10}>
                             <Button
