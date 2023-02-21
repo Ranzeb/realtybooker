@@ -67,6 +67,10 @@ export default function UserInput() {
                     boxShadow={'lg'}
                     p={8}>
                     <Stack spacing={4}>
+                        <FormControl id="location">
+                            <FormLabel>Location of the showing</FormLabel>
+                            <Inpyt type={'input'} />
+                        </FormControl>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
                             <DatePickerInput onChange={date => handleSelect(date, "date", 0)} />
