@@ -20,7 +20,9 @@ export default function UserInput() {
     const [dateTime, setDateTime] = useState([]);
 
     const handleSelect = (value, type, id) => {
-        if (!dateTime.indexOf(id)) {
+        console.log(dateTime)
+        const currentIdx = dateTime.findIndex(obj => obj.id === id);
+        if (currentIdx === -1) {
             const currentDateTime = dateTime;
             currentDateTime.push({
                 id: id,
@@ -29,7 +31,6 @@ export default function UserInput() {
             })
         } else {
             const newDateTime = [...dateTime];
-            const currentIdx = dateTime.findIndex(obj => obj.id === id);
             const addNewAvailability = {
                 id: id,
                 date: type === 'date' ? value : newDateTime[currentIdx].date,
@@ -63,7 +64,7 @@ export default function UserInput() {
                     <Stack spacing={4}>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
-                            <DatePickerInput onChange={e => handleSelect(e.target.value, "date", 0)} />
+                            <DatePickerInput onChange={date => handleSelect(date, "date", 0)} />
                         </FormControl>
                         <FormControl id="time">
                             <FormLabel>Time</FormLabel>
@@ -71,7 +72,7 @@ export default function UserInput() {
                         </FormControl>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
-                            <DatePickerInput onChange={e => handleSelect(e.target.value, "date", 1)} />
+                            <DatePickerInput onChange={date => handleSelect(date, "date", 1)} />
                         </FormControl>
                         <FormControl id="time">
                             <FormLabel>Time</FormLabel>
@@ -79,7 +80,7 @@ export default function UserInput() {
                         </FormControl>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
-                            <DatePickerInput onChange={e => handleSelect(e.target.value, "date", 2)} />
+                            <DatePickerInput onChange={date => handleSelect(date, "date", 2)} />
                         </FormControl>
                         <FormControl id="time">
                             <FormLabel>Time</FormLabel>

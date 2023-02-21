@@ -14,12 +14,14 @@ export default function Appointments() {
             date: "today",
             list: [
                 {
+                    id: 0,
                     email: "r.ranzieri@gmail.com",
                     time: "09.00 - 12.00",
                     user: "Gabriele Ranzieri",
                     desc: "The future can be even brighter but a goal without a plan is just a wish"
                 },
                 {
+                    id: 1,
                     email: "r.ranzieri@gmail.com",
                     time: "09.00 - 12.00",
                     user: "Gabriele Ranzieri",
@@ -31,12 +33,14 @@ export default function Appointments() {
             date: "tomorrow",
             list: [
                 {
+                    id: 2,
                     email: "r.ranzieri@gmail.com",
                     time: "09.00 - 12.00",
                     user: "Gabriele Ranzieri",
                     desc: "The future can be even brighter but a goal without a plan is just a wish"
                 },
                 {
+                    id: 3,
                     email: "r.ranzieri@gmail.com",
                     time: "09.00 - 12.00",
                     user: "Gabriele Ranzieri",
@@ -45,8 +49,8 @@ export default function Appointments() {
             ]
         },
     ]);
-    
-    function AdditionalInfo({location, timezone, email}) {
+
+    function AdditionalInfo({ location, timezone, email }) {
         return (
             <>
                 <HStack p={5} shadow='md' borderWidth='1px' borderRadius={10} mt={-5} mb={5} display={'grid'}>
@@ -61,12 +65,10 @@ export default function Appointments() {
         )
     }
 
-    function Feature({ email, desc, time, user, ...rest }) {
-        const [isOpen, setIsOpen] = useState(false);
-
+    function Feature({ email, desc, time, user, isActive, onShow, ...rest }) {
         return (
             <>
-                
+
                 <HStack p={5} shadow='md' borderWidth='1px' borderRadius={10} {...rest} mb={5}>
                     <Box mr={50}>
                         {time}
@@ -76,56 +78,61 @@ export default function Appointments() {
                         <Text mt={1}>{email}</Text>
                     </Box>
                     <Box>
-                        <TriangleDownIcon ml={50} onClick={() => {setIsOpen(currentIsOpen => !currentIsOpen)}}/>
+                        <TriangleDownIcon ml={50} onClick={onShow} />
                     </Box>
                 </HStack>
-                {isOpen && <AdditionalInfo 
-                            email={email}
-                            timezone="UTC"
-                            location="Parma"
-                            />
+                {isActive && <AdditionalInfo
+                    email={email}
+                    timezone="UTC"
+                    location="Parma"
+                />
                 }
             </>
         )
-      }
+    }
 
-    return(
+    const [isOpen, setIsOpen] = useState();
+
+    return (
+
         <>
-
             <AuthCheck>
-                <Navbar/> 
-                <SubNavbar props={"Appointments"}/>
+                <Navbar />
+                <SubNavbar props={"Appointments"} />
                 <Container mt={20}>
-                <VStack
-                    divider={<StackDivider borderColor='gray.200' />}
-                    spacing={4}
-                    width={400}
-                    align='stretch'
+                    <VStack
+                        divider={<StackDivider borderColor='gray.200' />}
+                        spacing={4}
+                        width={400}
+                        align='stretch'
                     >
-                    {appointments.map((app) => {
-                        return(
-                            <>
-                                <Heading as='h3' size='lg' mb={5}>{app.date}</Heading>
-                                {app.list.map((appointment) => {
-                                    return(
-                                        <>
-                                            <Feature
-                                                email={appointment.email}
-                                                user={appointment.user}
-                                                time={appointment.time}
-                                                desc={appointment.desc}
-                                            />
-                                        </>
-                                    )
-                                })}
-                            </>
-                        )
-                    })}
-                </VStack>   
+                        {appointments.map((app) => {
+
+                            return (
+                                <>
+                                    <Heading as='h3' size='lg' mb={5}>{app.date}</Heading>
+                                    {app.list.map((appointment) => {
+                                        return (
+                                            <>
+                                                <Feature
+                                                    email={appointment.email}
+                                                    user={appointment.user}
+                                                    time={appointment.time}
+                                                    desc={appointment.desc}
+                                                    isActive={isOpen === appointment.id}
+                                                    onShow={() => setIsOpen(appointment.id)}
+                                                />
+                                            </>
+                                        )
+                                    })}
+                                </>
+                            )
+                        })}
+                    </VStack>
                 </Container>
-                
+
             </AuthCheck>
-            
+
         </>
     )
 }

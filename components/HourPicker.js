@@ -1,8 +1,6 @@
 import { Box } from '@chakra-ui/react'
 
 export default function HourPicker(props) {
-
-    console.log(props)
     return (
         <>
             <Box maxW='md' minW='36' borderWidth='1px' borderRadius='lg' p='6' overflow='hidden' display={'flex'} justifyContent={'center'}>
