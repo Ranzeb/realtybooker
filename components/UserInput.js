@@ -15,10 +15,17 @@ import {
 import { DatePickerInput } from 'chakra-datetime-picker';
 import HorizontalSlider from './HorizontalSlider';
 import { useState, useEffect } from 'react';
+import CountryAndStateComponent from './CountryAndState';
+
 
 export default function UserInput() {
     const [dateTime, setDateTime] = useState([]);
     const [value, setValue] = useState();
+    const [location, setLocation] = useState({
+        country: "",
+        state: "",
+        city: ""
+    });
 
     const handleSelect = (value, type, id) => {
         console.log(dateTime)
@@ -69,7 +76,7 @@ export default function UserInput() {
                     <Stack spacing={4}>
                         <FormControl id="location">
                             <FormLabel>Location of the showing</FormLabel>
-                            <Input type={'input'} />
+                            <CountryAndStateComponent onChange={setLocation} />
                         </FormControl>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
@@ -97,6 +104,7 @@ export default function UserInput() {
                         </FormControl>
                         <Stack spacing={10}>
                             <Button
+                                mt={5}
                                 bg={'blue.400'}
                                 color={'white'}
                                 _hover={{

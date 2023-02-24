@@ -10,7 +10,7 @@ export default function HorizontalSlider({ onClick }) {
     return (
         <>
             <HStack spacing='24px' width='100%' overflowX={'scroll'}>
-                <HStack mt={10} mb={5}>
+                <HStack mt={2} mb={5} paddingLeft={2} paddingRight={2}>
                     {hours.map((hour, idx) => {
                         return (<HourPicker time={hour} onClick={() => onClick(hour, "time", idx)} id={idx} isSelected={selected === idx} onSelected={() => setSelected(idx)} />)
                     })}
