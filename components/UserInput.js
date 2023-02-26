@@ -76,7 +76,7 @@ export default function UserInput() {
                     <Stack spacing={4}>
                         <FormControl id="location">
                             <FormLabel>Location of the showing</FormLabel>
-                            <CountryAndStateComponent onChange={setLocation} />
+                            <CountryAndStateComponent currentLocation={location} setValue={setLocation} />
                         </FormControl>
                         <FormControl id="date">
                             <FormLabel>Date</FormLabel>
