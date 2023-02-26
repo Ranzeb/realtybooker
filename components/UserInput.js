@@ -21,6 +21,11 @@ import CountryAndStateComponent from './CountryAndState';
 export default function UserInput() {
     const [dateTime, setDateTime] = useState([]);
     const [value, setValue] = useState();
+
+    const [countryCode, setCountryCode] = useState();
+    const [cityCode, setCityCode] = useState();
+    const [city, setCity] = useState();
+
     const [location, setLocation] = useState({
         country: "",
         state: "",
@@ -28,7 +33,7 @@ export default function UserInput() {
     });
 
     const handleSelect = (value, type, id) => {
-        console.log(dateTime)
+
         const currentIdx = dateTime.findIndex(obj => obj.id === id);
         if (currentIdx === -1) {
             const currentDateTime = dateTime;
@@ -52,8 +57,8 @@ export default function UserInput() {
     }
 
     useEffect(() => {
-        console.log(value);
-    }, [value])
+        console.log(location);
+    }, [location])
 
     return (
         <Flex
