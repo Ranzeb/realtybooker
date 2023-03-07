@@ -5,6 +5,7 @@ import {
     FormLabel,
     Input,
     Checkbox,
+    HStack,
     Stack,
     Link,
     Button,
@@ -12,25 +13,16 @@ import {
     Text,
     useColorModeValue,
 } from '@chakra-ui/react';
-import { DatePickerInput } from 'chakra-datetime-picker';
+import Calendar from 'react-calendar'
 import HorizontalSlider from './HorizontalSlider';
 import { useState, useEffect } from 'react';
 import CountryAndStateComponent from './CountryAndState';
+import 'react-calendar/dist/Calendar.css';
+import VerticalSlider from './VerticalSlider';
 
-
-export default function UserInput() {
+function DatePicker({ selectedCity }) {
+    const [value, onChange] = useState(new Date());
     const [dateTime, setDateTime] = useState([]);
-    const [value, setValue] = useState();
-
-    const [countryCode, setCountryCode] = useState();
-    const [cityCode, setCityCode] = useState();
-    const [city, setCity] = useState();
-
-    const [location, setLocation] = useState({
-        country: "",
-        state: "",
-        city: ""
-    });
 
     const handleSelect = (value, type, id) => {
 
@@ -56,6 +48,66 @@ export default function UserInput() {
 
     }
 
+    const fetchAvailableHours = () => {
+        // fetch available hours from db based on location and calendar picked
+    };
+
+    return (
+        <>
+            <HStack spacing={4}>
+                <HStack spacing={10}>
+                    <Calendar onChange={onChange} value={value} locale="en-EN" />
+                </HStack>
+                <HStack spacing={10}>
+                    <VerticalSlider onClick={handleSelect} />
+                </HStack>
+            </HStack>
+        </>
+    )
+}
+
+export default function UserInput() {
+    const [dateTime, setDateTime] = useState([]);
+    const [value, setValue] = useState();
+
+    const [countryCode, setCountryCode] = useState();
+    const [cityCode, setCityCode] = useState();
+    const [city, setCity] = useState();
+
+    const [submittedCity, setSubmittedCity] = useState(true);
+    const [location, setLocation] = useState({
+        country: "",
+        state: "",
+        city: ""
+    });
+
+
+    /*
+    const handleSelect = (value, type, id) => {
+
+        const currentIdx = dateTime.findIndex(obj => obj.id === id);
+        if (currentIdx === -1) {
+            const currentDateTime = dateTime;
+            currentDateTime.push({
+                id: id,
+                date: type === 'date' ? value : '',
+                time: type === 'time' ? value : ''
+            })
+        } else {
+            const newDateTime = [...dateTime];
+            const addNewAvailability = {
+                id: id,
+                date: type === 'date' ? value : newDateTime[currentIdx].date,
+                time: type === 'time' ? value : newDateTime[currentIdx].time
+            };
+
+            newDateTime[currentIdx] = addNewAvailability;
+            setDateTime(newDateTime);
+        }
+
+    }
+*/
+
     useEffect(() => {
         console.log(location);
     }, [location])
@@ -66,60 +118,41 @@ export default function UserInput() {
             align={'center'}
             justify={'center'}
             bg={useColorModeValue('gray.50', 'gray.800')}>
-            <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
+            <Stack spacing={8} mx={'auto'} maxW={'xl'} py={12} px={6} align={'center'}>
                 <Stack align={'center'}>
-                    <Heading fontSize={'4xl'} textAlign={'center'}>Select at least three date and time for your availabilities</Heading>
+                    <Heading fontSize={'4xl'} textAlign={'center'}>Select the position of the house</Heading>
                     <Text fontSize={'lg'} color={'gray.600'}>
                         to find the best spot for <Link color={'blue.400'}>your showing</Link> ✌️
                     </Text>
                 </Stack>
-                <Box
+                <Stack
+                    width={600}
                     rounded={'lg'}
                     bg={useColorModeValue('white', 'gray.700')}
                     boxShadow={'lg'}
                     p={8}>
-                    <Stack spacing={4}>
-                        <FormControl id="location">
-                            <FormLabel>Location of the showing</FormLabel>
-                            <CountryAndStateComponent currentLocation={location} setValue={setLocation} />
-                        </FormControl>
-                        <FormControl id="date">
-                            <FormLabel>Date</FormLabel>
-                            <DatePickerInput onChange={date => handleSelect(date, "date", 0)} />
-                        </FormControl>
-                        <FormControl id="time">
-                            <FormLabel>Time</FormLabel>
-                            <HorizontalSlider onClick={handleSelect} />
-                        </FormControl>
-                        <FormControl id="date">
-                            <FormLabel>Date</FormLabel>
-                            <DatePickerInput onChange={date => handleSelect(date, "date", 1)} />
-                        </FormControl>
-                        <FormControl id="time">
-                            <FormLabel>Time</FormLabel>
-                            <HorizontalSlider onClick={handleSelect} />
-                        </FormControl>
-                        <FormControl id="date">
-                            <FormLabel>Date</FormLabel>
-                            <DatePickerInput onChange={date => handleSelect(date, "date", 2)} />
-                        </FormControl>
-                        <FormControl id="time">
-                            <FormLabel>Time</FormLabel>
-                            <HorizontalSlider onClick={handleSelect} />
-                        </FormControl>
-                        <Stack spacing={10}>
-                            <Button
-                                mt={5}
-                                bg={'blue.400'}
-                                color={'white'}
-                                _hover={{
-                                    bg: 'blue.500',
-                                }}>
-                                Find the best spot
-                            </Button>
+                    {!submittedCity &&
+                        <Stack spacing={4}>
+                            <FormControl id="location">
+                                <FormLabel>Location of the showing</FormLabel>
+                                <CountryAndStateComponent currentLocation={location} setValue={setLocation} />
+                            </FormControl>
+                            <Stack spacing={10}>
+                                <Button
+                                    mt={5}
+                                    bg={'blue.400'}
+                                    color={'white'}
+                                    _hover={{
+                                        bg: 'blue.500',
+                                    }}
+                                    onClick={() => setSubmittedCity(!submittedCity)}>
+                                    Find the best spot
+                                </Button>
+                            </Stack>
                         </Stack>
-                    </Stack>
-                </Box>
+                    }
+                    {submittedCity && <DatePicker selectedCity={location} />}
+                </Stack>
             </Stack>
         </Flex>
     );
