@@ -19,54 +19,62 @@ import { useState, useEffect } from 'react';
 import CountryAndStateComponent from './CountryAndState';
 import 'react-calendar/dist/Calendar.css';
 import VerticalSlider from './VerticalSlider';
+import firebase from 'firebase/compat/app'
+import { auth, firestore, googleAuthProvider, db } from '../lib/firebase';
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 
-function DatePicker({ selectedCity }) {
+function DatePicker({ selectedCity, link, userId }) {
     const [value, onChange] = useState(new Date());
     const [dateTime, setDateTime] = useState([]);
+    const [time, setTime] = useState();
 
-    const handleSelect = (value, type, id) => {
+    const [sessions, setSessions] = useState([]);
 
-        const currentIdx = dateTime.findIndex(obj => obj.id === id);
-        if (currentIdx === -1) {
-            const currentDateTime = dateTime;
-            currentDateTime.push({
-                id: id,
-                date: type === 'date' ? value : '',
-                time: type === 'time' ? value : ''
-            })
-        } else {
-            const newDateTime = [...dateTime];
-            const addNewAvailability = {
-                id: id,
-                date: type === 'date' ? value : newDateTime[currentIdx].date,
-                time: type === 'time' ? value : newDateTime[currentIdx].time
-            };
+    async function fetchLink(url) {
 
-            newDateTime[currentIdx] = addNewAvailability;
-            setDateTime(newDateTime);
-        }
+        // change ranzeb with userId
+        const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "ranzeb"));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            setSessions(oldSessions => [...oldSessions, doc.data()]);
+            console.log(doc.id, " => ", doc.data());
+        });
+    }
+
+    const fetchAllHours = () => {
 
     }
 
     const fetchAvailableHours = () => {
         // fetch available hours from db based on location and calendar picked
+        console.log("link:", link);
+        fetchLink(link);
+        console.log(selectedCity);
+        console.log(value);
+        console.log(time);
+        //console.log(link);
     };
 
     return (
         <>
-            <HStack spacing={4}>
+            <HStack mb={10} spacing={4}>
                 <HStack spacing={10}>
                     <Calendar onChange={onChange} value={value} locale="en-EN" />
                 </HStack>
                 <HStack spacing={10}>
-                    <VerticalSlider onClick={handleSelect} />
+                    <VerticalSlider setTime={setTime} />
                 </HStack>
             </HStack>
+            <Stack spacing={10}>
+                <Button onClick={fetchAvailableHours}> Book session </Button>
+            </Stack>
         </>
     )
 }
 
-export default function UserInput() {
+export default function UserInput({ link, uid }) {
     const [dateTime, setDateTime] = useState([]);
     const [value, setValue] = useState();
 
@@ -151,7 +159,7 @@ export default function UserInput() {
                             </Stack>
                         </Stack>
                     }
-                    {submittedCity && <DatePicker selectedCity={location} />}
+                    {submittedCity && <DatePicker selectedCity={location} link={link} userId={uid} />}
                 </Stack>
             </Stack>
         </Flex>
