@@ -30,17 +30,31 @@ function DatePicker({ selectedCity, link, userId }) {
 
     const [sessions, setSessions] = useState([]);
 
-    async function fetchLink(url) {
+    async function fetchLink(uid) {
 
-        // change ranzeb with userId
-        const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "ranzeb"));
+        setSessions([]);
+
+        const selectedDateStart = `${value.getFullYear()}-${value.getMonth()}-${value.getDate()}`;
+        const selectedDateEnd = `${value.getFullYear()}-0${value.getMonth()}-${value.getDate() + 1}`;
+        console.log("start: ", selectedDateStart);
+        console.log("end: ", selectedDateEnd);
+        let startDate = new Date(selectedDateStart);
+        let endDate = new Date(selectedDateEnd);
+        let timeStamp = new Date(selectedDateStart)
+        // change static userId with uid variable
+        const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "e3txVp68l3TaEr8r2KHjonKGxNw1"), where("date", '>', timeStamp));
+
+
 
         const querySnapshot = await getDocs(q);
+
         querySnapshot.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
             setSessions(oldSessions => [...oldSessions, doc.data()]);
-            console.log(doc.id, " => ", doc.data());
+            //console.log(doc.id, " => ", doc.data());
         });
+
+        console.log(sessions);
     }
 
     const fetchAllHours = () => {
@@ -49,12 +63,10 @@ function DatePicker({ selectedCity, link, userId }) {
 
     const fetchAvailableHours = () => {
         // fetch available hours from db based on location and calendar picked
-        console.log("link:", link);
-        fetchLink(link);
+        fetchLink(userId);
         console.log(selectedCity);
         console.log(value);
         console.log(time);
-        //console.log(link);
     };
 
     return (
