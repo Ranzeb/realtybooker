@@ -30,19 +30,24 @@ function DatePicker({ selectedCity, link, userId }) {
 
     const [sessions, setSessions] = useState([]);
 
+
+    //fetch all booked session for selected date
     async function fetchLink(uid) {
 
         setSessions([]);
 
-        const selectedDateStart = `${value.getFullYear()}-${value.getMonth()}-${value.getDate()}`;
-        const selectedDateEnd = `${value.getFullYear()}-0${value.getMonth()}-${value.getDate() + 1}`;
-        console.log("start: ", selectedDateStart);
-        console.log("end: ", selectedDateEnd);
+        const selectedDateStart = `${value.getFullYear()}-${value.getMonth()+1 < 10 ? '0' : ''}${value.getMonth()+1}-${value.getDate() < 10 ? '0' : ''}${value.getDate()}`;
+        console.log(selectedDateStart);
+        const selectedDateEnd = `${value.getFullYear()}-${value.getMonth()+1 < 10 ? '0' : ''}${value.getMonth()+1}-${value.getDate() < 10 ? '0' : ''}${value.getDate() + 1}`;
+        
         let startDate = new Date(selectedDateStart);
         let endDate = new Date(selectedDateEnd);
+
+        //console.log("start: ", startDate);
+        //console.log("end: ", endDate);
         let timeStamp = new Date(selectedDateStart)
         // change static userId with uid variable
-        const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "e3txVp68l3TaEr8r2KHjonKGxNw1"), where("date", '>', timeStamp));
+        const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "e3txVp68l3TaEr8r2KHjonKGxNw1"), where("date", '>', startDate), where("date", "<", endDate));
 
 
 
