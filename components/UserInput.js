@@ -29,12 +29,14 @@ function DatePicker({ selectedCity, link, userId }) {
     const [time, setTime] = useState();
 
     const [sessions, setSessions] = useState([]);
+    const [bookedHours, setBookedHours] = useState([]);
 
 
     //fetch all booked session for selected date
     async function fetchLink(uid) {
 
         setSessions([]);
+        setBookedHours([]);
 
         const selectedDateStart = `${value.getFullYear()}-${value.getMonth()+1 < 10 ? '0' : ''}${value.getMonth()+1}-${value.getDate() < 10 ? '0' : ''}${value.getDate()}`;
         console.log(selectedDateStart);
@@ -49,6 +51,7 @@ function DatePicker({ selectedCity, link, userId }) {
         // change static userId with uid variable
         const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "e3txVp68l3TaEr8r2KHjonKGxNw1"), where("date", '>', startDate), where("date", "<", endDate));
 
+        
 
 
         const querySnapshot = await getDocs(q);
@@ -60,6 +63,18 @@ function DatePicker({ selectedCity, link, userId }) {
         });
 
         console.log(sessions);
+
+
+        
+
+        sessions.map((session) => {
+            //bookedHours.push(session.timeStamp)
+            setBookedHours(oldBookedHours => [...oldBookedHours, session.date.toDate().getHours()]);
+            //bookedHours.push(session.date.toDate().getHours());
+            console.log("bookedHoursArray:", bookedHours);
+        })
+
+
     }
 
     const fetchAllHours = () => {
@@ -81,7 +96,7 @@ function DatePicker({ selectedCity, link, userId }) {
                     <Calendar onChange={onChange} value={value} locale="en-EN" />
                 </HStack>
                 <HStack spacing={10}>
-                    <VerticalSlider setTime={setTime} />
+                    <VerticalSlider setTime={setTime} availableHours={bookedHours}/>
                 </HStack>
             </HStack>
             <Stack spacing={10}>
