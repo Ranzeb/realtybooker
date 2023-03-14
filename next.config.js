@@ -9,7 +9,7 @@ module.exports = {
     domains: ['images.unsplash.com']
   },
   env: {
-    apiFirebase: 'apiKeyFirebase',
+    apiFirebase: "apiKeyFirebase",
     authDomain: "authDomainFirebase",
     projectId: "projectIdFirebase",
     storageBucket: "storageBucketFirebase",
