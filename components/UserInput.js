@@ -1,10 +1,7 @@
 import {
     Flex,
-    Box,
     FormControl,
     FormLabel,
-    Input,
-    Checkbox,
     HStack,
     Stack,
     Link,
@@ -14,14 +11,12 @@ import {
     useColorModeValue,
 } from '@chakra-ui/react';
 import Calendar from 'react-calendar'
-import HorizontalSlider from './HorizontalSlider';
 import { useState, useEffect } from 'react';
 import CountryAndStateComponent from './CountryAndState';
 import 'react-calendar/dist/Calendar.css';
 import VerticalSlider from './VerticalSlider';
-import firebase from 'firebase/compat/app'
-import { auth, firestore, googleAuthProvider, db } from '../lib/firebase';
-import { doc, setDoc, getDoc, addDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { firestore } from '../lib/firebase';
+import { addDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 function DatePicker({ selectedCity, link, userId }) {
     //const [value, onChange] = useState(new Date());
@@ -78,16 +73,12 @@ function DatePicker({ selectedCity, link, userId }) {
 
         await getDocs(q).then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                console.log("doc: ", doc.data());
                 sessions.push(doc.data());
             })
         });
 
-        console.log("session: ", sessions);
-
         sessions.map((session) => {
             setBookedHours(oldBookedHours => [...oldBookedHours, session.date.toDate().getHours()]);
-            console.log("bookedHoursArray:", bookedHours);
         })
 
 
