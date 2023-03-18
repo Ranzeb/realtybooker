@@ -21,98 +21,130 @@ import 'react-calendar/dist/Calendar.css';
 import VerticalSlider from './VerticalSlider';
 import firebase from 'firebase/compat/app'
 import { auth, firestore, googleAuthProvider, db } from '../lib/firebase';
-import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, setDoc, getDoc, addDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 function DatePicker({ selectedCity, link, userId }) {
-    const [value, onChange] = useState(new Date());
-    const [dateTime, setDateTime] = useState([]);
+    //const [value, onChange] = useState(new Date());
     const [time, setTime] = useState();
-
-    const [sessions, setSessions] = useState([]);
+    const [name, setName] = useState();
     const [bookedHours, setBookedHours] = useState([]);
 
+    const [dayPicked, setDayPicked] = useState(false);
+    const [selectedDay, setSelectedDay] = useState();
+    const [selectedDate, setSelectedDate] = useState();
+
+
+    function getMonthName(monthNumber, locale) {
+        const date = new Date();
+        date.setMonth(monthNumber - 1);
+
+        return date.toLocaleString(locale, { month: 'long' });
+    }
+
+    function getDayName(date) {
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var d = new Date(date);
+        return days[d.getDay()];
+    }
+
+
+    function getCurrentDayToString(day, dayNumber, monthNumber, locale) {
+        return getDayName(dayNumber) + ", " + getMonthName(monthNumber, locale) + " " + day;
+    }
 
     //fetch all booked session for selected date
-    async function fetchLink(uid) {
+    async function fetchLink(value) {
 
-        setSessions([]);
+        setSelectedDate(`${value.getFullYear()}-${value.getMonth() + 1 < 10 ? '0' : ''}${value.getMonth() + 1}-${value.getDate() < 10 ? '0' : ''}${value.getDate()}`);
+
+        const dayDate = getCurrentDayToString(value.getDate(), value.getDay(), value.getMonth() + 1, 'en-US');
+        setSelectedDay(dayDate);
+        setDayPicked(true);
+        console.log("fetch link value:", selectedDate);
         setBookedHours([]);
 
-        const selectedDateStart = `${value.getFullYear()}-${value.getMonth()+1 < 10 ? '0' : ''}${value.getMonth()+1}-${value.getDate() < 10 ? '0' : ''}${value.getDate()}`;
-        console.log(selectedDateStart);
-        const selectedDateEnd = `${value.getFullYear()}-${value.getMonth()+1 < 10 ? '0' : ''}${value.getMonth()+1}-${value.getDate() < 10 ? '0' : ''}${value.getDate() + 1}`;
-        
+        const selectedDateStart = `${value.getFullYear()}-${value.getMonth() + 1 < 10 ? '0' : ''}${value.getMonth() + 1}-${value.getDate() < 10 ? '0' : ''}${value.getDate()}`;
+        const selectedDateEnd = `${value.getFullYear()}-${value.getMonth() + 1 < 10 ? '0' : ''}${value.getMonth() + 1}-${value.getDate() < 10 ? '0' : ''}${value.getDate() + 1}`;
+
         let startDate = new Date(selectedDateStart);
         let endDate = new Date(selectedDateEnd);
 
-        //console.log("start: ", startDate);
-        //console.log("end: ", endDate);
-        let timeStamp = new Date(selectedDateStart)
         // change static userId with uid variable
         const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "e3txVp68l3TaEr8r2KHjonKGxNw1"), where("date", '>', startDate), where("date", "<", endDate));
 
-        
+        console.log("query: ", q);
 
+        const sessions = [];
 
-        const querySnapshot = await getDocs(q);
-
-        querySnapshot.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            setSessions(oldSessions => [...oldSessions, doc.data()]);
-            //console.log(doc.id, " => ", doc.data());
+        await getDocs(q).then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                console.log("doc: ", doc.data());
+                sessions.push(doc.data());
+            })
         });
 
-        console.log(sessions);
-
-
-        
+        console.log("session: ", sessions);
 
         sessions.map((session) => {
-            //bookedHours.push(session.timeStamp)
             setBookedHours(oldBookedHours => [...oldBookedHours, session.date.toDate().getHours()]);
-            //bookedHours.push(session.date.toDate().getHours());
             console.log("bookedHoursArray:", bookedHours);
         })
 
 
     }
 
-    const fetchAllHours = () => {
-
-    }
-
-    const fetchAvailableHours = () => {
+    const bookSelectedSession = async () => {
         // fetch available hours from db based on location and calendar picked
-        fetchLink(userId);
-        console.log(selectedCity);
-        console.log(value);
-        console.log(time);
+        const city = "Traversetolo";
+        const state = "Parma";
+        const country = "Italy";
+        const duration = 1;
+        const uid = "e3txVp68l3TaEr8r2KHjonKGxNw1";
+
+        console.log(selectedDate)
+        const bookedSession = new Date(selectedDate);
+
+        bookedSession.setHours(time);
+        bookedSession.setMinutes(0);
+        bookedSession.setSeconds(0);
+
+        console.log(bookedSession);
+
+
+        const docRef = await addDoc(collection(firestore, "sessionBooked"), {
+            city: city,
+            state: state,
+            country: country,
+            uid: uid,
+            duration: duration,
+            date: bookedSession
+        });
+        console.log("Document written with ID: ", docRef.id);
+
     };
+
+    const tileDisabled = ({ date }) => {
+        return date < new Date()
+    }
 
     return (
         <>
-            <HStack mb={10} spacing={4}>
+            <HStack mb={10} spacing={4} width="850px">
                 <HStack spacing={10}>
-                    <Calendar onChange={onChange} value={value} locale="en-EN" />
+                    <Calendar tileDisabled={tileDisabled} onClickDay={(e) => fetchLink(e)} locale="en-EN" />
                 </HStack>
-                <HStack spacing={10}>
-                    <VerticalSlider setTime={setTime} availableHours={bookedHours}/>
-                </HStack>
+                {dayPicked && <HStack spacing={10}>
+                    <VerticalSlider setTime={setTime} availableHours={bookedHours} selectedDay={selectedDay} />
+                </HStack>}
             </HStack>
             <Stack spacing={10}>
-                <Button onClick={fetchAvailableHours}> Book session </Button>
+                <Button onClick={bookSelectedSession}> Book session </Button>
             </Stack>
         </>
     )
 }
 
 export default function UserInput({ link, uid }) {
-    const [dateTime, setDateTime] = useState([]);
-    const [value, setValue] = useState();
-
-    const [countryCode, setCountryCode] = useState();
-    const [cityCode, setCityCode] = useState();
-    const [city, setCity] = useState();
 
     const [submittedCity, setSubmittedCity] = useState(true);
     const [location, setLocation] = useState({
@@ -120,37 +152,6 @@ export default function UserInput({ link, uid }) {
         state: "",
         city: ""
     });
-
-
-    /*
-    const handleSelect = (value, type, id) => {
-
-        const currentIdx = dateTime.findIndex(obj => obj.id === id);
-        if (currentIdx === -1) {
-            const currentDateTime = dateTime;
-            currentDateTime.push({
-                id: id,
-                date: type === 'date' ? value : '',
-                time: type === 'time' ? value : ''
-            })
-        } else {
-            const newDateTime = [...dateTime];
-            const addNewAvailability = {
-                id: id,
-                date: type === 'date' ? value : newDateTime[currentIdx].date,
-                time: type === 'time' ? value : newDateTime[currentIdx].time
-            };
-
-            newDateTime[currentIdx] = addNewAvailability;
-            setDateTime(newDateTime);
-        }
-
-    }
-*/
-
-    useEffect(() => {
-        console.log(location);
-    }, [location])
 
     return (
         <Flex
@@ -166,7 +167,7 @@ export default function UserInput({ link, uid }) {
                     </Text>
                 </Stack>
                 <Stack
-                    width={600}
+                    width={!submittedCity ? 600 : 850}
                     rounded={'lg'}
                     bg={useColorModeValue('white', 'gray.700')}
                     boxShadow={'lg'}
