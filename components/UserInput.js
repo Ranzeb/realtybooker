@@ -108,7 +108,10 @@ function DatePicker({ selectedCity, link, userId }) {
             country: country,
             uid: uid,
             duration: duration,
-            date: bookedSession
+            date: bookedSession,
+            username: "Gabriele Ranzieri",
+            email: "gabriele.ranzieri@studenti.unipr.it",
+            desc: "First house"
         });
         console.log("Document written with ID: ", docRef.id);
 

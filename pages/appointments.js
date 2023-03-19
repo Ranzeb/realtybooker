@@ -10,13 +10,15 @@ import 'react-calendar/dist/Calendar.css';
 import { auth, firestore, googleAuthProvider, db } from '../lib/firebase';
 import { doc, setDoc, getDoc, addDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { forEach } from "lodash";
+import _ from "lodash";
 
 export default function Appointments() {
     const [sessions, setSessions] = useState([]);
     const [isLoading, setLoading] = useState(false)
+    const [mapState, setMapState] = useState([]);
 
-    const sessionsMap = new Map();
-
+    let sessionsMap = [];
+    const sessionsList = [];
     function getMonthName(monthNumber, locale) {
         const date = new Date();
         date.setMonth(monthNumber - 1);
@@ -38,68 +40,37 @@ export default function Appointments() {
     //fetch all booked session for selected date
     async function fetchLink(value) {
 
-        setSessions([]);
-
         // change static userId with uid variable
         const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "e3txVp68l3TaEr8r2KHjonKGxNw1"), where("date", ">=", new Date()));
 
         await getDocs(q).then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 console.log("doc: ", doc.data());
-                setSessions(oldSessions => [...oldSessions, doc.data()]);
                 const value = doc.data().date.toDate();
                 console.log("value: ", value);
                 const dayDate = getCurrentDayToString(value.getDate(), value.getDay(), value.getMonth() + 1, 'en-US');
-                if (sessionsMap.has(dayDate)) {
-                    sessionsMap.get(dayDate).push(doc.data());
-                } else {
-                    sessionsMap.set(dayDate, [doc.data()]);
+                const currentObj = {
+                    email: doc.data().email,
+                    username: doc.data().username,
+                    uid: doc.data().uid,
+                    city: doc.data().city,
+                    country: doc.data().country,
+                    state: doc.data().state,
+                    date: doc.data().date.toDate(),
+                    duration: doc.data().duration,
+                    desc: doc.data().desc,
+                    key: dayDate
                 }
+
+                console.log("obj: ", currentObj);
+                sessionsList.push(currentObj);
             })
+
+            console.log("sessionsList: ", sessionsList);
+            setMapState(_.groupBy(sessionsList, "key"));
+            console.log("mapState: ", mapState)
         });
     }
-
-
-    const [appointments, setAppointments] = useState([
-        {
-            date: "today",
-            list: [
-                {
-                    id: 0,
-                    email: "r.ranzieri@gmail.com",
-                    time: "09.00 - 12.00",
-                    user: "Gabriele Ranzieri",
-                    desc: "The future can be even brighter but a goal without a plan is just a wish"
-                },
-                {
-                    id: 1,
-                    email: "r.ranzieri@gmail.com",
-                    time: "09.00 - 12.00",
-                    user: "Gabriele Ranzieri",
-                    desc: "The future can be even brighter but a goal without a plan is just a wish"
-                }
-            ]
-        },
-        {
-            date: "tomorrow",
-            list: [
-                {
-                    id: 2,
-                    email: "r.ranzieri@gmail.com",
-                    time: "09.00 - 12.00",
-                    user: "Gabriele Ranzieri",
-                    desc: "The future can be even brighter but a goal without a plan is just a wish"
-                },
-                {
-                    id: 3,
-                    email: "r.ranzieri@gmail.com",
-                    time: "09.00 - 12.00",
-                    user: "Gabriele Ranzieri",
-                    desc: "The future can be even brighter but a goal without a plan is just a wish"
-                }
-            ]
-        },
-    ]);
 
     function AdditionalInfo({ location, timezone, email }) {
         return (
@@ -146,7 +117,12 @@ export default function Appointments() {
 
     useEffect(() => {
         fetchLink("test").then(() => {
-            console.log(sessionsMap)
+            console.log(sessionsList)
+            sessionsMap = _.groupBy(sessionsList, "key");
+
+            setMapState(sessionsMap);
+            setSessions(sessionsMap);
+            console.log("mapstate:", sessionsMap)
             setLoading(true);
         })
 
@@ -166,27 +142,15 @@ export default function Appointments() {
                     >
 
                         {
-                            isLoading && sessionsMap.forEach((sessions, key) => {
-                                console.log("key: ", key);
-                                sessions.map((session) => {
-                                    console.log("session: ", session);
-                                    return (
-                                        <>
-                                            <Text>{key}</Text>
-                                            <Feature
-                                                email={session.email}
-                                                user={session.username}
-                                                time={session.date.toDate().getHours()}
-                                                duration={session.duration}
-                                                desc={session.desc}
-                                                isActive={isOpen === 1}
-                                                onShow={() => setIsOpen(1)}
-                                            />
-                                        </>
-                                    )
-                                })
+                            isLoading && sessionsMap.map((session, key) => {
+                                return (
+                                    <>
+                                        <Text>{key}</Text>
+                                    </>
+                                )
                             })
                         }
+
                     </VStack>
                 </Container>
 
