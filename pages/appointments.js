@@ -17,8 +17,7 @@ export default function Appointments() {
     const [isLoading, setLoading] = useState(false)
     const [mapState, setMapState] = useState([]);
 
-    let sessionsMap = [];
-    const sessionsList = [];
+
     function getMonthName(monthNumber, locale) {
         const date = new Date();
         date.setMonth(monthNumber - 1);
@@ -42,14 +41,17 @@ export default function Appointments() {
 
         // change static userId with uid variable
         const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "e3txVp68l3TaEr8r2KHjonKGxNw1"), where("date", ">=", new Date()));
+        const sessionsList = [];
 
         await getDocs(q).then((querySnapshot) => {
+
             querySnapshot.forEach((doc) => {
-                console.log("doc: ", doc.data());
+                console.log("doc: ", doc.id);
                 const value = doc.data().date.toDate();
                 console.log("value: ", value);
                 const dayDate = getCurrentDayToString(value.getDate(), value.getDay(), value.getMonth() + 1, 'en-US');
                 const currentObj = {
+                    id: doc.id,
                     email: doc.data().email,
                     username: doc.data().username,
                     uid: doc.data().uid,
@@ -59,27 +61,25 @@ export default function Appointments() {
                     date: doc.data().date.toDate(),
                     duration: doc.data().duration,
                     desc: doc.data().desc,
+                    zipcode: doc.data().zipcode,
+                    timezone: doc.data().timezone,
                     key: dayDate
                 }
 
                 console.log("obj: ", currentObj);
                 sessionsList.push(currentObj);
             })
-
-            console.log("sessionsList: ", sessionsList);
-            setMapState(_.groupBy(sessionsList, "key"));
-            console.log("mapState: ", mapState)
         });
+
+        return sessionsList;
     }
 
-    function AdditionalInfo({ location, timezone, email }) {
+    function AdditionalInfo({ timezone }) {
         return (
             <>
                 <HStack p={5} shadow='md' borderWidth='1px' borderRadius={10} mt={-5} mb={5} display={'grid'}>
-                    <Box mr={50}>
-                        <Heading fontSize='l'>Email: {email}</Heading>
-                        <Text mt={1}>Location: {location}</Text>
-                        <Text mt={1}>Timezone: {timezone}</Text>
+                    <Box mb={'20px'} mr={50}>
+                        <Text mb={1}>Timezone: {timezone}</Text>
                     </Box>
                     <Button mt={'20px'} fontSize='revert' colorScheme='red'>Cancel Appointment</Button>
                 </HStack>
@@ -87,7 +87,7 @@ export default function Appointments() {
         )
     }
 
-    function Feature({ email, desc, time, user, duration, isActive, onShow, ...rest }) {
+    function Feature({ email, desc, time, user, city, country, state, zipCode, duration, timezone, isActive, onShow, ...rest }) {
         return (
             <>
 
@@ -97,16 +97,14 @@ export default function Appointments() {
                     </Box>
                     <Box mr={50}>
                         <Heading fontSize='l'>{user}</Heading>
-                        <Text mt={1}>{email}</Text>
+                        <Text mt={1}>{city + ", " + country + ", " + state + ", " + zipCode}</Text>
                     </Box>
                     <Box>
                         <TriangleDownIcon ml={50} onClick={onShow} />
                     </Box>
                 </HStack>
                 {isActive && <AdditionalInfo
-                    email={email}
-                    timezone="UTC"
-                    location="Parma"
+                    timezone={timezone}
                 />
                 }
             </>
@@ -116,17 +114,55 @@ export default function Appointments() {
     const [isOpen, setIsOpen] = useState();
 
     useEffect(() => {
-        fetchLink("test").then(() => {
-            console.log(sessionsList)
-            sessionsMap = _.groupBy(sessionsList, "key");
-
-            setMapState(sessionsMap);
-            setSessions(sessionsMap);
-            console.log("mapstate:", sessionsMap)
+        fetchLink("test").then((list) => {
+            setSessions(_.groupBy(list, "key"));
             setLoading(true);
         })
 
     }, [])
+
+
+    const render = () => {
+        return (
+            <>
+                {
+                    Object.keys(sessions).map((key) => {
+                        return (
+                            <>
+                                <Text key={key} fontSize='2xl' mb={5}>{key}:</Text>
+                                {
+                                    sessions[key].map((obj) => {
+                                        return (
+                                            <>
+                                                <Feature
+                                                    key={obj.id}
+                                                    email={obj.email}
+                                                    desc={obj.desc}
+                                                    time={obj.date.getHours()}
+                                                    user={obj.username}
+                                                    city={obj.city}
+                                                    country={obj.country}
+                                                    state={obj.state}
+                                                    uid={obj.uid}
+                                                    duration={obj.duration}
+                                                    isActive={isOpen === obj.id}
+                                                    zipCode={obj.zipcode}
+                                                    timezone={obj.timezone}
+                                                    onShow={() => setIsOpen(isOpen === obj.id ? false : obj.id)}
+                                                />
+                                            </>
+                                        )
+                                    })
+                                }
+                            </>
+
+
+                        );
+                    })}
+            </>);
+    }
+
+
     return (
 
         <>
@@ -142,13 +178,7 @@ export default function Appointments() {
                     >
 
                         {
-                            isLoading && sessionsMap.map((session, key) => {
-                                return (
-                                    <>
-                                        <Text>{key}</Text>
-                                    </>
-                                )
-                            })
+                            isLoading && render()
                         }
 
                     </VStack>
