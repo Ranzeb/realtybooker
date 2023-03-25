@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import SubNavbar from "@/components/SubNavbar";
 import { firestore } from "@/lib/firebase";
-import { doc, setDoc, getDoc, addDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, setDoc, getDoc, addDoc, collection, query, where, getDocs, collectionGroup } from "firebase/firestore";
 import {
     Button,
     Flex,
@@ -32,14 +32,9 @@ const workingHours = {
 export default function Schedule() {
     const pageName = "Working Hours";
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const [schedule, setSchedule] = useState(days.map((day) => {
-        return {
-            day: day,
-            startingHour: "9",
-            endingHour: "17",
-            available: true
-        }
-    }));
+    const [isLoading, setLoading] = useState(false)
+
+    const [schedule, setSchedule] = useState([]);
 
     const changeSchedule = (value, day, type) => {
         const newSchedule = [...schedule];
@@ -49,14 +44,14 @@ export default function Schedule() {
             day: day,
             startingHour: type === "beginningHour" ? value : newSchedule[currentWorkingHour].startingHour,
             endingHour: type === "endingHour" ? value : newSchedule[currentWorkingHour].endingHour,
-            available: type === "checkBox" ? value : newSchedule[currentWorkingHour].available
+            available: type === "checkBox" ? !newSchedule[currentWorkingHour].available : newSchedule[currentWorkingHour].available
         }
 
         newSchedule[currentWorkingHour] = newWorkingHour;
-        console.log(newWorkingHour);
-        console.log(newSchedule[currentWorkingHour])
+        console.log("newWorkingHour: ", newWorkingHour);
+        console.log("new schedule: ", newSchedule[currentWorkingHour])
         setSchedule(newSchedule);
-        console.log(schedule);
+        console.log("full schedule: ", schedule);
     }
 
     const handleSubmit = () => {
@@ -76,6 +71,50 @@ export default function Schedule() {
         })
         toast.success("Availabilities set successfully");
     }
+
+    async function fetchLink(value) {
+
+        const uid = "e3txVp68l3TaEr8r2KHjonKGxNw1";
+
+        // change static userId with uid variable
+        console.log("Fetch")
+        setSchedule([]);
+
+        let idx = 0;
+        days.map(async (day) => {
+            console.log(day)
+            const docRef = firestore.collection('availabilities').doc(uid).collection(day);
+
+
+            const q = query(docRef);
+            await getDocs(q).then((querySnapshot) => {
+                console.log("idx: ", idx);
+                querySnapshot.forEach(async (doc) => {
+                    console.log("ending: ", doc.id);
+                    const scheduleObj = {
+                        day: day,
+                        startingHour: doc.data().startingHour,
+                        endingHour: doc.data().endingHour,
+                        available: doc.data().available
+                    }
+                    setSchedule(oldSchedule => [...oldSchedule, scheduleObj]);
+                })
+                idx++;
+            });
+        })
+
+    }
+
+    useEffect(() => {
+        console.log("useEffect : ");
+        setSchedule([]);
+        fetchLink("e3txVp68l3TaEr8r2KHjonKGxNw1").then((list) => {
+
+
+            setLoading(true);
+        })
+
+    }, [])
 
     return (
         <>
@@ -100,18 +139,18 @@ export default function Schedule() {
                             Set your weekly schedule
                         </Heading>
 
-                        <FormControl id="email" display={'flex'} mt={5} mb={5} isRequired>
+                        {isLoading && <FormControl id="email" display={'flex'} mt={5} mb={5} isRequired>
                             <SimpleGrid columns={[2, null, 1]} spacing='40px'>
-                                {days.map((day, id) => {
+                                {schedule.map((schedule, id) => {
                                     return (
                                         <div key={id}>
                                             <Box display={'flex'} mb={30} >
-                                                <Checkbox defaultChecked mr={5} width={70} onChange={e => changeSchedule(e.target.value, day, "checkBox")}>{day}</Checkbox>
+                                                <Checkbox isChecked={schedule.available} mr={5} width={70} onChange={e => changeSchedule(e.target.value, schedule.day, "checkBox")}>{schedule.day}</Checkbox>
 
                                                 <Box display={'flex'} alignItems={'center'}>
-                                                    <Input id={day + "BeginningHour"} mr={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, day, "beginningHour")} />
+                                                    <Input value={schedule.startingHour} isDisabled={!schedule.available} placeholder={schedule.startingHour} id={schedule.day + "BeginningHour"} mr={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, schedule.day, "beginningHour")} />
                                                     -
-                                                    <Input id={day + "EndingHour"} ml={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, day, "endingHour")} />
+                                                    <Input value={schedule.endingHour} isDisabled={!schedule.available} id={schedule.day + "EndingHour"} ml={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, schedule.day, "endingHour")} />
                                                 </Box>
                                             </Box>
                                             <Divider />
@@ -120,6 +159,7 @@ export default function Schedule() {
                                 })}
                             </SimpleGrid>
                         </FormControl>
+                        }
                         <Stack spacing={6} mt={10}>
                             <Button
                                 bg={'blue.400'}

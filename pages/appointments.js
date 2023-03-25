@@ -15,8 +15,7 @@ import _ from "lodash";
 export default function Appointments() {
     const [sessions, setSessions] = useState([]);
     const [isLoading, setLoading] = useState(false)
-    const [mapState, setMapState] = useState([]);
-
+    const [isOpen, setIsOpen] = useState();
 
     function getMonthName(monthNumber, locale) {
         const date = new Date();
@@ -110,8 +109,6 @@ export default function Appointments() {
             </>
         )
     }
-
-    const [isOpen, setIsOpen] = useState();
 
     useEffect(() => {
         fetchLink("test").then((list) => {
