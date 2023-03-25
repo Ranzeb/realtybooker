@@ -19,7 +19,7 @@ import {
     Box,
     Divider
 } from '@chakra-ui/react';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 
 const workingHours = {
@@ -35,6 +35,8 @@ export default function Schedule() {
     const [isLoading, setLoading] = useState(false)
 
     const [schedule, setSchedule] = useState([]);
+
+    const dataFetch = useRef(false)
 
     const changeSchedule = (value, day, type) => {
         const newSchedule = [...schedule];
@@ -56,6 +58,7 @@ export default function Schedule() {
 
     const handleSubmit = () => {
         //save state on DB then reload the page.
+        const uid = "e3txVp68l3TaEr8r2KHjonKGxNw1";
 
         schedule.map(async (day) => {
             try {
@@ -66,7 +69,7 @@ export default function Schedule() {
                 })
 
             } catch (e) {
-                console.log(e)
+                console.log("error: ", e)
             }
         })
         toast.success("Availabilities set successfully");
@@ -107,6 +110,11 @@ export default function Schedule() {
 
     useEffect(() => {
         console.log("useEffect : ");
+
+        if (dataFetch.current)
+            return
+        dataFetch.current = true
+
         setSchedule([]);
         fetchLink("e3txVp68l3TaEr8r2KHjonKGxNw1").then((list) => {
 
