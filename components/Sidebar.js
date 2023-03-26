@@ -1,6 +1,6 @@
-import { Flex, Text, VStack, Box, useColorModeValue, Stack, } from "@chakra-ui/react";
+import { Box, Stack, Text, VStack } from "@chakra-ui/react";
 import Link from "next/link";
-export default function Sidebar(props) {
+export default function Sidebar() {
     return (
         <>
             <Box
@@ -10,7 +10,6 @@ export default function Sidebar(props) {
                 top={0}
                 h="100%"
             >
-
                 <VStack
                     alignItems={'baseline'}
                     height={300}
@@ -26,10 +25,6 @@ export default function Sidebar(props) {
                         <Link href="/settings/schedule"><Text fontSize={22}>Schedule</Text></Link>
                     </Stack>
                 </VStack>
-
-
-
-
             </Box>
         </>
     )

@@ -15,14 +15,11 @@ import {
 } from '@chakra-ui/react';
 import { FcGoogle } from 'react-icons/fc';
 import { auth, googleAuthProvider } from '../lib/firebase';
-import { UserContext } from '../lib/context';
-import { useContext, useState } from 'react';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import redirect from '@/lib/redirect';
 import toast from 'react-hot-toast';
 
 export default function SignIn() {
-    const { user, username } = useContext(UserContext);
 
     function SignInPage() {
         const [userCredential, setUserCredentials] = useState({ email: "", password: "" });

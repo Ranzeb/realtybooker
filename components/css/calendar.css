@@ -3,7 +3,7 @@
 }
 
 .react-calendar {
-    border: none;
+    border: none !important;
     width: 550px !important;
     height: 450px !important;
    

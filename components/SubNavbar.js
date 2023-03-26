@@ -1,27 +1,7 @@
-import { ReactNode, useEffect } from 'react';
 import {
     Box,
-    Flex,
-    Avatar,
-    Link,
-    Button,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuDivider,
-    useDisclosure,
-    useColorModeValue,
-    Stack,
-    useColorMode,
-    Center,
-    Text
+    Flex, Text, useColorModeValue
 } from '@chakra-ui/react';
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { UserContext } from '@/lib/context';
-import { useContext } from 'react';
-import { auth } from '@/lib/firebase';
-import redirect from '@/lib/redirect';
 
 
 

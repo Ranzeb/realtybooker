@@ -1,10 +1,9 @@
-import { Box } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react';
 
 export default function HourPicker({ time, onClick, id, onSelected, isSelected }) {
 
 
     const handleOnClick = () => {
-        //onClick(time, "time", id);
         onClick(time);
         onSelected();
     }
@@ -13,6 +12,7 @@ export default function HourPicker({ time, onClick, id, onSelected, isSelected }
         <>
             <Box maxW='md' minW='36' borderWidth='1px' borderRadius='lg' p='6' overflow='hidden' display={'flex'} justifyContent={'center'} boxShadow={isSelected && 'outline'} onClick={() => handleOnClick()}>
                 <Box
+                    id={id}
                     mt='1'
                     fontWeight='semibold'
                     as='h4'

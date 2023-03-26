@@ -1,4 +1,4 @@
-import { Box, Heading, Text, Button } from '@chakra-ui/react';
+import { Box, Button, Heading, Text } from '@chakra-ui/react';
 import AuthCheck from './AuthCheck';
 import Navbar from './Navbar';
 

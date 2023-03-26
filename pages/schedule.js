@@ -1,33 +1,16 @@
 import AuthCheck from "@/components/AuthCheck";
 import Navbar from "@/components/Navbar";
-import Sidebar from "@/components/Sidebar";
 import SubNavbar from "@/components/SubNavbar";
 import { firestore } from "@/lib/firebase";
-import { doc, setDoc, getDoc, addDoc, collection, query, where, getDocs, collectionGroup } from "firebase/firestore";
 import {
-    Button,
-    Flex,
-    FormControl,
-    FormLabel,
-    Heading,
-    Input,
-    Stack,
-    useColorModeValue,
-    Checkbox,
-    CheckboxGroup,
-    SimpleGrid,
-    Box,
-    Divider
+    Box, Button, Checkbox, Divider, Flex,
+    FormControl, Heading,
+    Input, SimpleGrid, Stack,
+    useColorModeValue
 } from '@chakra-ui/react';
-import { useState, useEffect, useRef } from "react";
+import { doc, getDocs, query, setDoc } from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-
-const workingHours = {
-    day: "",
-    startingHour: "9",
-    endingHour: "17",
-    available: true
-};
 
 export default function Schedule() {
     const pageName = "Working Hours";
@@ -62,7 +45,7 @@ export default function Schedule() {
 
         schedule.map(async (day) => {
             try {
-                const docRef = await setDoc(doc(firestore, "availabilities", uid, day.day, "0"), {
+                await setDoc(doc(firestore, "availabilities", uid, day.day, "0"), {
                     available: day.available,
                     startingHour: day.startingHour,
                     endingHour: day.endingHour,
@@ -117,8 +100,6 @@ export default function Schedule() {
 
         setSchedule([]);
         fetchLink("e3txVp68l3TaEr8r2KHjonKGxNw1").then((list) => {
-
-
             setLoading(true);
         })
 

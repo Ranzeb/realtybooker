@@ -1,31 +1,18 @@
-import {
-    Flex,
-    Box,
-    FormControl,
-    FormLabel,
-    Input,
-    InputGroup,
-    HStack,
-    InputRightElement,
-    Stack,
-    Button,
-    Heading,
-    Text,
-    useColorModeValue,
-    Link,
-    Center
-} from '@chakra-ui/react';
-import { FcGoogle } from 'react-icons/fc';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { auth, firestore, googleAuthProvider } from '@/lib/firebase';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import {
+    Box, Button, Center, Flex, FormControl,
+    FormLabel, Heading, HStack, Input,
+    InputGroup, InputRightElement, Link, Stack, Text,
+    useColorModeValue
+} from '@chakra-ui/react';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import Router from "next/router";
+import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { UserContext } from '../lib/context';
-import { useContext, useState } from 'react';
+import { FcGoogle } from 'react-icons/fc';
 
 export default function SignUp() {
-    const { user, username } = useContext(UserContext);
 
     const redirect = () => {
         Router.push('/home');

@@ -1,28 +1,21 @@
+import AuthCheck from '@/components/AuthCheck';
+import Navbar from "@/components/Navbar";
+import Sidebar from '@/components/Sidebar';
+import SubNavbar from '@/components/Subnavbar';
+import { UserContext } from '@/lib/context';
 import {
-    Button,
-    Flex,
+    Avatar, Button, Center, Flex,
     FormControl,
     FormLabel,
     Heading,
     Input,
-    Stack,
-    useColorModeValue,
-    HStack,
-    Avatar,
-    AvatarBadge,
-    IconButton,
-    Center,
+    Stack
 } from '@chakra-ui/react';
-import { auth, firestore } from '../../lib/firebase';
+import 'firebase/compat/database';
 import 'firebase/storage';
-import Navbar from "@/components/Navbar";
-import { UserContext } from '@/lib/context';
 import { useContext, useState } from 'react';
 import toast from 'react-hot-toast';
-import 'firebase/compat/database';
-import Sidebar from '@/components/Sidebar';
-import AuthCheck from '@/components/AuthCheck';
-import SubNavbar from '@/components/Subnavbar';
+import { auth, firestore } from '../../lib/firebase';
 export default function Settings() {
 
     const { user, username } = useContext(UserContext);

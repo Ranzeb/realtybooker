@@ -1,21 +1,12 @@
 import {
-    Flex,
-    Box,
-    FormControl,
-    FormLabel,
-    Input,
-    Checkbox,
-    Stack,
-    Link,
-    Button,
-    Heading,
-    Text,
-    useColorModeValue,
+    Box, Button, Flex, FormControl,
+    FormLabel, Heading, Link, Stack, Text,
+    useColorModeValue
 } from '@chakra-ui/react';
 import { DatePickerInput } from 'chakra-datetime-picker';
-import HorizontalSlider from './HorizontalSlider';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import CountryAndStateComponent from './CountryAndState';
+import HorizontalSlider from './HorizontalSlider';
 
 
 export default function UserInput() {

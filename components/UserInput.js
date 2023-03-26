@@ -1,33 +1,31 @@
 import {
-    Flex,
+    Button, Flex,
     FormControl,
-    FormLabel,
-    HStack,
-    Stack,
-    Link,
-    Button,
-    Heading,
-    Text,
-    useColorModeValue,
+    FormLabel, Heading, HStack, Link, Stack, Text,
+    useColorModeValue
 } from '@chakra-ui/react';
-import Calendar from 'react-calendar'
-import { useState, useEffect } from 'react';
-import CountryAndStateComponent from './CountryAndState';
+import { addDoc, collection, getDocs, query, where, getDoc } from "firebase/firestore";
+import next from 'next';
+import { useState } from 'react';
+import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import VerticalSlider from './VerticalSlider';
+import { toast } from 'react-hot-toast';
 import { firestore } from '../lib/firebase';
-import { addDoc, collection, query, where, getDocs } from "firebase/firestore";
+import CountryAndStateComponent from './CountryAndState';
+import VerticalSlider from './VerticalSlider';
+import { useRouter } from 'next/router';
 
 function DatePicker({ selectedCity, link, userId }) {
-    //const [value, onChange] = useState(new Date());
+
+    const router = useRouter()
     const [time, setTime] = useState();
-    const [name, setName] = useState();
     const [bookedHours, setBookedHours] = useState([]);
 
     const [dayPicked, setDayPicked] = useState(false);
     const [selectedDay, setSelectedDay] = useState();
     const [selectedDate, setSelectedDate] = useState();
-
+    const [realtorUserId, setRealtorUserId] = useState();
+    const [location, setLocation] = useState(selectedCity);
 
     function getMonthName(monthNumber, locale) {
         const date = new Date();
@@ -47,8 +45,28 @@ function DatePicker({ selectedCity, link, userId }) {
         return getDayName(dayNumber) + ", " + getMonthName(monthNumber, locale) + " " + day;
     }
 
+    async function fetchLink() {
+        const { link } = router.query
+        const ref = firestore.doc(`links/${link}`);
+
+        let userId = "";
+        await getDoc(ref).then((url) => {
+
+            if (url.exists()) {
+                console.log(url.data().uid)
+                userId = url.data().uid;
+            } else {
+                console.log("link dont exist")
+            }
+        })
+
+        return userId;
+    }
+
+
     //fetch all booked session for selected date
-    async function fetchLink(value) {
+    async function fetchSessionsAvailable(value) {
+
 
         setSelectedDate(`${value.getFullYear()}-${value.getMonth() + 1 < 10 ? '0' : ''}${value.getMonth() + 1}-${value.getDate() < 10 ? '0' : ''}${value.getDate()}`);
 
@@ -59,15 +77,22 @@ function DatePicker({ selectedCity, link, userId }) {
         setBookedHours([]);
 
         const selectedDateStart = `${value.getFullYear()}-${value.getMonth() + 1 < 10 ? '0' : ''}${value.getMonth() + 1}-${value.getDate() < 10 ? '0' : ''}${value.getDate()}`;
-        const selectedDateEnd = `${value.getFullYear()}-${value.getMonth() + 1 < 10 ? '0' : ''}${value.getMonth() + 1}-${value.getDate() < 10 ? '0' : ''}${value.getDate() + 1}`;
+        const nextDay = value.getDate() + 1 > 31 ? '1' : value.getDate() + 1;
+        const nextMonth = value.getDate() + 1 > 31 ? value.getMonth() + 2 : value.getMonth() + 1;
+        const selectedDateEnd = `${value.getFullYear()}-${nextMonth < 10 ? '0' : ''}${nextMonth}-${nextDay < 10 ? '0' : ''}${nextDay}`;
 
         let startDate = new Date(selectedDateStart);
         let endDate = new Date(selectedDateEnd);
 
+        const uid = await fetchLink();
+        setRealtorUserId(uid);
+        console.log(uid);
         // change static userId with uid variable
-        const q = query(collection(firestore, "sessionBooked"), where("uid", "==", "e3txVp68l3TaEr8r2KHjonKGxNw1"), where("date", '>', startDate), where("date", "<", endDate));
 
-        console.log("query: ", q);
+
+        const q = query(collection(firestore, "sessionBooked"), where("uid", "==", uid), where("date", '>', startDate), where("date", "<", endDate));
+
+        console.log("start: ", startDate, " end: ", endDate);
 
         const sessions = [];
 
@@ -80,17 +105,14 @@ function DatePicker({ selectedCity, link, userId }) {
         sessions.map((session) => {
             setBookedHours(oldBookedHours => [...oldBookedHours, session.date.toDate().getHours()]);
         })
-
-
     }
 
     const bookSelectedSession = async () => {
         // fetch available hours from db based on location and calendar picked
-        const city = "Traversetolo";
-        const state = "Parma";
-        const country = "Italy";
+        const city = location.city;
+        const state = location.state;
+        const country = location.country;
         const duration = 1;
-        const uid = "e3txVp68l3TaEr8r2KHjonKGxNw1";
 
         console.log(selectedDate)
         const bookedSession = new Date(selectedDate);
@@ -106,7 +128,7 @@ function DatePicker({ selectedCity, link, userId }) {
             city: city,
             state: state,
             country: country,
-            uid: uid,
+            uid: realtorUserId,
             duration: duration,
             date: bookedSession,
             username: "Gabriele Ranzieri",
@@ -125,7 +147,7 @@ function DatePicker({ selectedCity, link, userId }) {
         <>
             <HStack mb={10} spacing={4} width="850px">
                 <HStack spacing={10}>
-                    <Calendar tileDisabled={tileDisabled} onClickDay={(e) => fetchLink(e)} locale="en-EN" />
+                    <Calendar tileDisabled={tileDisabled} onClickDay={(e) => fetchSessionsAvailable(e)} locale="en-EN" />
                 </HStack>
                 {dayPicked && <HStack spacing={10}>
                     <VerticalSlider setTime={setTime} availableHours={bookedHours} selectedDay={selectedDay} />
@@ -140,7 +162,7 @@ function DatePicker({ selectedCity, link, userId }) {
 
 export default function UserInput({ link, uid }) {
 
-    const [submittedCity, setSubmittedCity] = useState(true);
+    const [submittedCity, setSubmittedCity] = useState(false);
     const [location, setLocation] = useState({
         country: "",
         state: "",

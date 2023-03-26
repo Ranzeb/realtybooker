@@ -1,5 +1,5 @@
-import { Country, State, City } from 'country-state-city';
-import Dropdown from './Commons/Dropdown'
+import { City, Country, State } from 'country-state-city';
+import Dropdown from './Commons/Dropdown';
 const CountryAndStateComponent = ({ setValue, currentLocation }) => {
 
 

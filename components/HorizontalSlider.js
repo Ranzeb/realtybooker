@@ -1,6 +1,6 @@
-import { Stack, HStack, VStack, Box } from '@chakra-ui/react'
-import { useState } from 'react'
-import HourPicker from './HourPicker'
+import { HStack } from '@chakra-ui/react';
+import { useState } from 'react';
+import HourPicker from './HourPicker';
 
 export default function HorizontalSlider({ onClick }) {
 

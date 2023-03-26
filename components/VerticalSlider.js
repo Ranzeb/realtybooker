@@ -1,6 +1,6 @@
-import { Stack, HStack, VStack, Box, Text } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
-import HourPicker from './HourPicker'
+import { Text, VStack } from '@chakra-ui/react';
+import { useState } from 'react';
+import HourPicker from './HourPicker';
 
 export default function VerticalSlider({ setTime, availableHours, selectedDay }) {
 

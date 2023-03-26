@@ -1,23 +1,20 @@
-import Navbar from "@/components/Navbar"
+import AuthCheck from "@/components/AuthCheck";
+import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 import {
-  Button,
-  FormControl,
-  Flex,
+  Button, Flex,
   Heading,
   Input,
   Stack,
   Text,
-  useColorModeValue,
+  useColorModeValue
 } from '@chakra-ui/react';
-import firebase from 'firebase/compat/app'
-import { doc, auth, firestore, googleAuthProvider } from '../../lib/firebase';
-import { UserContext } from '../../lib/context';
-import toast from 'react-hot-toast';
-import Sidebar from "@/components/Sidebar";
-import { useEffect, useState, useCallback, useContext } from 'react';
 import debounce from 'lodash.debounce';
 import { useRouter } from 'next/router';
-import AuthCheck from "@/components/AuthCheck";
+import { useCallback, useContext, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { UserContext } from '../../lib/context';
+import { auth, firestore } from '../../lib/firebase';
 
 export default function Link() {
 
@@ -37,7 +34,7 @@ export default function Link() {
         setLink(doc.data().link);
       })
       .catch(err => {
-        //toast.error("Error updating link: ", err)
+        toast.error("Error updating link: ", err)
       });
   }
 
