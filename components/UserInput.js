@@ -150,7 +150,7 @@ function DatePicker({ selectedCity, link, userId }) {
                     <Calendar tileDisabled={tileDisabled} onClickDay={(e) => fetchSessionsAvailable(e)} locale="en-EN" />
                 </HStack>
                 {dayPicked && <HStack spacing={10}>
-                    <VerticalSlider setTime={setTime} availableHours={bookedHours} selectedDay={selectedDay} />
+                    <VerticalSlider uid={realtorUserId} setTime={setTime} availableHours={bookedHours} selectedDay={selectedDay} />
                 </HStack>}
             </HStack>
             <Stack spacing={10}>

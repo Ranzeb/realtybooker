@@ -2,7 +2,8 @@ import { Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 import HourPicker from './HourPicker';
 
-export default function VerticalSlider({ setTime, availableHours, selectedDay }) {
+export default function VerticalSlider({ setTime, availableHours, startingHour, endingHour, selectedDay, uid }) {
+
 
     let hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     hours = hours.filter((el) => !availableHours.includes(el));
