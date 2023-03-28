@@ -1,6 +1,8 @@
 import AuthCheck from "@/components/AuthCheck";
 import Navbar from "@/components/Navbar";
 import SubNavbar from "@/components/SubNavbar";
+import { useContext } from 'react';
+import { UserContext } from '../lib/context';
 import { firestore } from "@/lib/firebase";
 import {
     Box, Button, Checkbox, Divider, Flex,
@@ -13,6 +15,8 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 
 export default function Schedule() {
+    const { user, username } = useContext(UserContext);
+    const userId = user?.uid;
     const pageName = "Working Hours";
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const [isLoading, setLoading] = useState(false)
@@ -41,6 +45,7 @@ export default function Schedule() {
 
     const handleSubmit = () => {
         //save state on DB then reload the page.
+        //change uid with userId
         const uid = "e3txVp68l3TaEr8r2KHjonKGxNw1";
 
         schedule.map(async (day) => {
@@ -58,8 +63,9 @@ export default function Schedule() {
         toast.success("Availabilities set successfully");
     }
 
-    async function fetchLink(value) {
+    async function fetchLink() {
 
+        //change uid with userId
         const uid = "e3txVp68l3TaEr8r2KHjonKGxNw1";
 
         // change static userId with uid variable
@@ -99,7 +105,8 @@ export default function Schedule() {
         dataFetch.current = true
 
         setSchedule([]);
-        fetchLink("e3txVp68l3TaEr8r2KHjonKGxNw1").then((list) => {
+        //change uid with userId
+        fetchLink().then(() => {
             setLoading(true);
         })
 

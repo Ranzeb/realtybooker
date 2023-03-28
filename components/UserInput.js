@@ -4,7 +4,7 @@ import {
     FormLabel, Heading, HStack, Link, Stack, Text,
     useColorModeValue
 } from '@chakra-ui/react';
-import { addDoc, collection, getDocs, query, where, getDoc } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where, getDoc, doc } from "firebase/firestore";
 import next from 'next';
 import { useState } from 'react';
 import Calendar from 'react-calendar';
@@ -15,12 +15,12 @@ import CountryAndStateComponent from './CountryAndState';
 import VerticalSlider from './VerticalSlider';
 import { useRouter } from 'next/router';
 
-function DatePicker({ selectedCity, link, userId }) {
+function DatePicker({ selectedCity }) {
 
     const router = useRouter()
     const [time, setTime] = useState();
     const [bookedHours, setBookedHours] = useState([]);
-
+    const [schedule, setSchedule] = useState([]);
     const [dayPicked, setDayPicked] = useState(false);
     const [selectedDay, setSelectedDay] = useState();
     const [selectedDate, setSelectedDate] = useState();
@@ -36,8 +36,7 @@ function DatePicker({ selectedCity, link, userId }) {
 
     function getDayName(date) {
         var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        var d = new Date(date);
-        return days[d.getDay()];
+        return days[date];
     }
 
 
@@ -72,7 +71,6 @@ function DatePicker({ selectedCity, link, userId }) {
 
         const dayDate = getCurrentDayToString(value.getDate(), value.getDay(), value.getMonth() + 1, 'en-US');
         setSelectedDay(dayDate);
-        setDayPicked(true);
         console.log("fetch link value:", selectedDate);
         setBookedHours([]);
 
@@ -105,6 +103,18 @@ function DatePicker({ selectedCity, link, userId }) {
         sessions.map((session) => {
             setBookedHours(oldBookedHours => [...oldBookedHours, session.date.toDate().getHours()]);
         })
+
+        const ref = firestore.doc(`availabilities/${uid}/${getDayName(value.getDay()).substring(0, 3)}/0`);
+
+        await getDoc(ref).then((document) => {
+            const startDoc = document.data().startingHour;
+            const endDoc = document.data().endingHour;
+            const range = (start, stop, step) =>
+                Array.from({ length: (stop - start) / step + 1 }, (_, i) => +start + i * step);
+            setSchedule(range(startDoc, endDoc, 1));
+        })
+
+        setDayPicked(true);
     }
 
     const bookSelectedSession = async () => {
@@ -124,7 +134,7 @@ function DatePicker({ selectedCity, link, userId }) {
         console.log(bookedSession);
 
 
-        const docRef = await addDoc(collection(firestore, "sessionBooked"), {
+        await addDoc(collection(firestore, "sessionBooked"), {
             city: city,
             state: state,
             country: country,
@@ -135,8 +145,8 @@ function DatePicker({ selectedCity, link, userId }) {
             email: "gabriele.ranzieri@studenti.unipr.it",
             desc: "First house"
         });
-        console.log("Document written with ID: ", docRef.id);
 
+        toast.success("Session booked successfully");
     };
 
     const tileDisabled = ({ date }) => {
@@ -150,7 +160,7 @@ function DatePicker({ selectedCity, link, userId }) {
                     <Calendar tileDisabled={tileDisabled} onClickDay={(e) => fetchSessionsAvailable(e)} locale="en-EN" />
                 </HStack>
                 {dayPicked && <HStack spacing={10}>
-                    <VerticalSlider uid={realtorUserId} setTime={setTime} availableHours={bookedHours} selectedDay={selectedDay} />
+                    <VerticalSlider schedule={schedule} setTime={setTime} availableHours={bookedHours} selectedDay={selectedDay} />
                 </HStack>}
             </HStack>
             <Stack spacing={10}>
