@@ -1,6 +1,7 @@
 import AuthCheck from "@/components/AuthCheck";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
+import SubNavbar from "@/components/SubNavbar";
 import {
   Button, Flex,
   Heading,
@@ -25,7 +26,7 @@ export default function Link() {
   const { user, username } = useContext(UserContext);
   const postRef = firestore.collection('users').doc(auth.currentUser?.uid);
   const [link, setLink] = useState("");
-
+  const pageName = "Change your link";
   const router = useRouter();
 
   const getLink = () => {
@@ -116,6 +117,7 @@ export default function Link() {
     <>
       <AuthCheck>
         <Navbar />
+        <SubNavbar props={pageName} />
         <Stack isInline spacing={8} align="center" justify="center">
           <Flex>
             <Sidebar />

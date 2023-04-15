@@ -38,8 +38,7 @@ export default function Navbar() {
         <>
             <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
                 <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-                    <Box onClick={() => (redirect('/home'))}>Home</Box>
-
+                    <Button onClick={() => (redirect('/home'))}>Home</Button>
                     <Flex alignItems={'center'}>
                         <Stack direction={'row'} spacing={7}>
                             <Button onClick={toggleColorMode}>

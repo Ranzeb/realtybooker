@@ -6,7 +6,7 @@ import {
 } from '@chakra-ui/react';
 import { addDoc, collection, getDocs, query, where, getDoc, doc } from "firebase/firestore";
 import next from 'next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { toast } from 'react-hot-toast';
@@ -20,18 +20,23 @@ function DatePicker({ selectedCity }) {
     const router = useRouter()
     const [time, setTime] = useState();
     const [bookedHours, setBookedHours] = useState([]);
+    const [unavailableDays, setUnavailableDays] = useState([]);
     const [schedule, setSchedule] = useState([]);
     const [dayPicked, setDayPicked] = useState(false);
     const [selectedDay, setSelectedDay] = useState();
     const [selectedDate, setSelectedDate] = useState();
     const [realtorUserId, setRealtorUserId] = useState();
     const [location, setLocation] = useState(selectedCity);
-
+    const [isLoading, setIsLoading] = useState(false);
     function getMonthName(monthNumber, locale) {
         const date = new Date();
         date.setMonth(monthNumber - 1);
 
         return date.toLocaleString(locale, { month: 'long' });
+    }
+
+    function getDayNameUpdated(date = new Date(), locale = 'en-US') {
+        return date.toLocaleDateString(locale, { weekday: 'short' });
     }
 
     function getDayName(date) {
@@ -150,24 +155,64 @@ function DatePicker({ selectedCity }) {
     };
 
     const tileDisabled = ({ date }) => {
-        return date < new Date()
+        console.log("tileDisabled: ", unavailableDays)
+        console.log(getDayNameUpdated(date) + " " + unavailableDays[0])
+        console.log(unavailableDays.includes(getDayNameUpdated(date)))
+        return date < new Date() || unavailableDays.includes(getDayNameUpdated(date));
     }
+
+    async function fetchUnavailabilities() {
+
+        //change uid with userId
+        const uid = "e3txVp68l3TaEr8r2KHjonKGxNw1";
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        setUnavailableDays([]);
+        // change static userId with uid variable
+        console.log("Fetch")
+        let idx = 0;
+        days.map(async (day) => {
+            const docRef = firestore.collection('availabilities').doc(uid).collection(day);
+
+
+            const q = query(docRef);
+            await getDocs(q).then((querySnapshot) => {
+                querySnapshot.forEach(async (doc) => {
+                    if (!doc.data().available) {
+                        setUnavailableDays(oldUnavailableDays => [...oldUnavailableDays, day]);
+                    }
+                })
+            });
+        })
+    }
+
+    useEffect(() => {
+        setUnavailableDays([]);
+        //change uid with userId
+        fetchUnavailabilities().then(() => {
+            setIsLoading(true);
+        })
+
+    }, [])
 
     return (
         <>
-            <HStack mb={10} spacing={4} width="850px">
-                <HStack spacing={10}>
-                    <Calendar tileDisabled={tileDisabled} onClickDay={(e) => fetchSessionsAvailable(e)} locale="en-EN" />
-                </HStack>
-                {dayPicked && <HStack spacing={10}>
-                    <VerticalSlider schedule={schedule} setTime={setTime} availableHours={bookedHours} selectedDay={selectedDay} />
-                </HStack>}
-            </HStack>
-            <Stack spacing={10}>
-                <Button onClick={bookSelectedSession}> Book session </Button>
-            </Stack>
+            {isLoading &&
+                <>
+                    <HStack mb={10} spacing={4} width="850px">
+                        <HStack spacing={10}>
+                            <Calendar tileDisabled={tileDisabled} onClickDay={(e) => fetchSessionsAvailable(e)} locale="en-EN" />
+                        </HStack>
+                        {dayPicked && <HStack spacing={10}>
+                            <VerticalSlider schedule={schedule} setTime={setTime} availableHours={bookedHours} selectedDay={selectedDay} />
+                        </HStack>}
+                    </HStack>
+                    <Stack spacing={10}>
+                        <Button onClick={bookSelectedSession}> Book session </Button>
+                    </Stack>
+                </>
+            }
         </>
-    )
+    );
 }
 
 export default function UserInput({ link, uid }) {

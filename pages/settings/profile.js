@@ -1,7 +1,7 @@
 import AuthCheck from '@/components/AuthCheck';
 import Navbar from "@/components/Navbar";
 import Sidebar from '@/components/Sidebar';
-import SubNavbar from '@/components/Subnavbar';
+import SubNavbar from '@/components/SubNavbar';
 import { UserContext } from '@/lib/context';
 import {
     Avatar, Button, Center, Flex,

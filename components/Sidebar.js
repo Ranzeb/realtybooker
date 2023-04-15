@@ -23,6 +23,7 @@ export default function Sidebar() {
                         <Link href="/settings/profile"><Text fontSize={22}>Profile</Text></Link>
                         <Link href="/settings/link"><Text fontSize={22}>Link</Text></Link>
                         <Link href="/settings/schedule"><Text fontSize={22}>Schedule</Text></Link>
+                        <Link href="/settings/duration"><Text fontSize={22}>Duration Time</Text></Link>
                     </Stack>
                 </VStack>
             </Box>

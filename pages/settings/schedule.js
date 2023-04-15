@@ -1,8 +1,9 @@
 import AuthCheck from "@/components/AuthCheck";
 import Navbar from "@/components/Navbar";
 import SubNavbar from "@/components/SubNavbar";
+import Sidebar from "@/components/Sidebar";
 import { useContext } from 'react';
-import { UserContext } from '../lib/context';
+import { UserContext } from '../../lib/context';
 import { firestore } from "@/lib/firebase";
 import {
     Box, Button, Checkbox, Divider, Flex,
@@ -117,60 +118,65 @@ export default function Schedule() {
             <Navbar />
             <SubNavbar props={pageName} />
             <AuthCheck>
-                <Flex
-                    minH={'100vh'}
-                    align={'center'}
-                    justify={'center'}
-                    bg={useColorModeValue('gray.50', 'gray.800')}>
-                    <Stack
-                        spacing={4}
-                        w={'full'}
-                        maxW={'md'}
-                        bg={useColorModeValue('white', 'gray.700')}
-                        rounded={'xl'}
-                        boxShadow={'lg'}
-                        p={6}
-                        my={12}>
-                        <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }} mb={5}>
-                            Set your weekly schedule
-                        </Heading>
+                <Stack isInline spacing={8} align="center" justify="center">
+                    <Flex>
+                        <Sidebar />
+                    </Flex>
+                    <Flex
+                        minH={'100vh'}
+                        align={'center'}
+                        justify={'center'}
+                    >
+                        <Stack
+                            spacing={4}
+                            w={'full'}
+                            maxW={'md'}
+                            bg={useColorModeValue('white', 'gray.700')}
+                            rounded={'xl'}
+                            boxShadow={'lg'}
+                            p={6}
+                            my={12}>
+                            <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }} mb={5}>
+                                Set your weekly schedule
+                            </Heading>
 
-                        {isLoading && <FormControl id="email" display={'flex'} mt={5} mb={5} isRequired>
-                            <SimpleGrid columns={[2, null, 1]} spacing='40px'>
-                                {schedule.map((schedule, id) => {
-                                    return (
-                                        <div key={id}>
-                                            <Box display={'flex'} mb={30} >
-                                                <Checkbox isChecked={schedule.available} mr={5} width={70} onChange={e => changeSchedule(e.target.value, schedule.day, "checkBox")}>{schedule.day}</Checkbox>
+                            {isLoading && <FormControl id="email" display={'flex'} mt={5} mb={5} isRequired>
+                                <SimpleGrid columns={[2, null, 1]} spacing='40px'>
+                                    {schedule.map((schedule, id) => {
+                                        return (
+                                            <div key={id}>
+                                                <Box display={'flex'} mb={30} >
+                                                    <Checkbox isChecked={schedule.available} mr={5} width={70} onChange={e => changeSchedule(e.target.value, schedule.day, "checkBox")}>{schedule.day}</Checkbox>
 
-                                                <Box display={'flex'} alignItems={'center'}>
-                                                    <Input value={schedule.startingHour} isDisabled={!schedule.available} placeholder={schedule.startingHour} id={schedule.day + "BeginningHour"} mr={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, schedule.day, "beginningHour")} />
-                                                    -
-                                                    <Input value={schedule.endingHour} isDisabled={!schedule.available} id={schedule.day + "EndingHour"} ml={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, schedule.day, "endingHour")} />
+                                                    <Box display={'flex'} alignItems={'center'}>
+                                                        <Input value={schedule.startingHour} isDisabled={!schedule.available} placeholder={schedule.startingHour} id={schedule.day + "BeginningHour"} mr={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, schedule.day, "beginningHour")} />
+                                                        -
+                                                        <Input value={schedule.endingHour} isDisabled={!schedule.available} id={schedule.day + "EndingHour"} ml={2} htmlSize={4} width='auto' onChange={e => changeSchedule(e.target.value, schedule.day, "endingHour")} />
+                                                    </Box>
                                                 </Box>
-                                            </Box>
-                                            <Divider />
-                                        </div>
-                                    )
-                                })}
-                            </SimpleGrid>
-                        </FormControl>
-                        }
-                        <Stack spacing={6} mt={10}>
-                            <Button
-                                bg={'blue.400'}
-                                color={'white'}
-                                _hover={{
-                                    bg: 'blue.500',
-                                }}
-                                type={"submit"}
-                                onClick={handleSubmit}>
-                                Submit
-                            </Button>
-                        </Stack>
+                                                <Divider />
+                                            </div>
+                                        )
+                                    })}
+                                </SimpleGrid>
+                            </FormControl>
+                            }
+                            <Stack spacing={6} mt={10}>
+                                <Button
+                                    bg={'blue.400'}
+                                    color={'white'}
+                                    _hover={{
+                                        bg: 'blue.500',
+                                    }}
+                                    type={"submit"}
+                                    onClick={handleSubmit}>
+                                    Submit
+                                </Button>
+                            </Stack>
 
-                    </Stack>
-                </Flex>
+                        </Stack>
+                    </Flex>
+                </Stack>
             </AuthCheck>
         </>
     )

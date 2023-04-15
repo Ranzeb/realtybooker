@@ -122,6 +122,7 @@ export default function Appointments() {
     const render = () => {
         return (
             <>
+                {Object.keys(sessions).length === 0 && <Text> No incoming appointments </Text>}
                 {
                     Object.keys(sessions).map((key) => {
                         return (
@@ -152,8 +153,6 @@ export default function Appointments() {
                                     })
                                 }
                             </>
-
-
                         );
                     })}
             </>);
